@@ -1,6 +1,8 @@
 package com.project.managelesson.presentation.common_components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -30,7 +33,13 @@ fun AddDialog(
     onClickConfirmButton: () -> Unit,
     onDismissRequest: () -> Unit,
     title: String,
-    isOpen: Boolean
+    isOpen: Boolean,
+    subjectName: String,
+    goalHours: String,
+    onChangeName: (String) -> Unit,
+    onChangeGoalHours: (String) -> Unit,
+    selectedColor: List<Color>,
+    onChangeColor: (List<Color>) -> Unit,
 ) {
     if (isOpen) {
         AlertDialog(
@@ -46,22 +55,28 @@ fun AddDialog(
                         Subject.subjectColor.forEach {
                             Box(
                                 modifier = Modifier
-                                    .size(25.dp)
+                                    .size(30.dp)
                                     .clip(CircleShape)
+                                    .border(
+                                        width = 2.dp,
+                                        color = if (it == selectedColor) Color.Black else Color.Transparent,
+                                        shape = CircleShape
+                                    )
                                     .background(brush = Brush.verticalGradient(it))
+                                    .clickable { onChangeColor(it) }
                             )
                         }
                     }
                     OutlinedTextField(
-                        value = "",
-                        onValueChange = {  },
+                        value = subjectName,
+                        onValueChange = onChangeName,
                         label = { Text(text = "Subject name") },
                         singleLine = true
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     OutlinedTextField(
-                        value = "",
-                        onValueChange = {  },
+                        value = goalHours,
+                        onValueChange = onChangeGoalHours,
                         label = { Text(text = "Goal Study Hours") },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)

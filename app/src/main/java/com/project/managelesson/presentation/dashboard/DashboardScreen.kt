@@ -41,8 +41,8 @@ import com.project.managelesson.presentation.common_components.AddDialog
 import com.project.managelesson.presentation.dashboard.components.CountCard
 import com.project.managelesson.presentation.dashboard.components.EmptyListSection
 import com.project.managelesson.presentation.dashboard.components.SubjectCard
-import com.project.managelesson.presentation.dashboard.components.lessonList
-import com.project.managelesson.presentation.dashboard.components.taskList
+import com.project.managelesson.presentation.common_components.lessonList
+import com.project.managelesson.presentation.common_components.taskList
 
 @Composable
 fun DashboardScreen() {
@@ -79,11 +79,29 @@ fun DashboardScreen() {
         mutableStateOf(false)
     }
 
+    var subjectName by remember {
+        mutableStateOf("")
+    }
+
+    var goalHours by remember {
+        mutableStateOf("")
+    }
+
+    var selectedColor by remember {
+        mutableStateOf(Subject.subjectColor.random())
+    }
+
     AddDialog(
         onClickConfirmButton = { stateDialog = false },
         onDismissRequest = { stateDialog = false },
         title = "Add Subject",
-        isOpen = stateDialog
+        isOpen = stateDialog,
+        subjectName = subjectName,
+        goalHours = goalHours,
+        onChangeName = { subjectName = it },
+        onChangeGoalHours = { goalHours = it },
+        selectedColor = selectedColor,
+        onChangeColor = { selectedColor = it }
     )
 
     Scaffold(

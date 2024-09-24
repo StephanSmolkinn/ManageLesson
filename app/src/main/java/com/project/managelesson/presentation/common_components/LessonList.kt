@@ -1,4 +1,4 @@
-package com.project.managelesson.presentation.dashboard.components
+package com.project.managelesson.presentation.common_components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,6 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.project.managelesson.R
 import com.project.managelesson.domain.model.Lesson
+import com.project.managelesson.presentation.dashboard.components.EmptyListSection
+import com.project.managelesson.presentation.dashboard.components.LessonCard
 
 fun LazyListScope.lessonList(
     title: String,

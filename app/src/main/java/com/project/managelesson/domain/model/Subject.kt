@@ -17,3 +17,5 @@ data class Subject(
         val subjectColor = listOf(gradient1, gradient2, gradient3, gradient4, gradient5)
     }
 }
+
+class InvalidSubjectException(message: String) : Exception(message)
