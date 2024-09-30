@@ -31,7 +31,11 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
@@ -39,7 +43,10 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.project.managelesson.domain.model.Lesson
+import com.project.managelesson.domain.model.Subject
 import com.project.managelesson.domain.model.Task
+import com.project.managelesson.presentation.common_components.AddDialog
+import com.project.managelesson.presentation.common_components.DeleteDialog
 import com.project.managelesson.presentation.dashboard.components.CountCard
 import com.project.managelesson.presentation.common_components.lessonList
 import com.project.managelesson.presentation.common_components.taskList
@@ -76,6 +83,58 @@ fun SubjectScreen(
         Lesson(1, 0L, 5L, "English", 0)
     )
 
+    var addDialogState by rememberSaveable {
+        mutableStateOf(false)
+    }
+    var deleteLessonDialogState by rememberSaveable {
+        mutableStateOf(false)
+    }
+    var deleteSubjectDialogState by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    var subjectName by remember {
+        mutableStateOf("")
+    }
+
+    var goalHours by remember {
+        mutableStateOf("")
+    }
+
+    var selectedColor by remember {
+        mutableStateOf(Subject.subjectColor.random())
+    }
+
+    AddDialog(
+        onClickConfirmButton = { addDialogState = false },
+        onDismissRequest = { addDialogState = false },
+        title = "Add Subject",
+        isOpen = addDialogState,
+        subjectName = subjectName,
+        goalHours = goalHours,
+        onChangeName = { subjectName = it },
+        onChangeGoalHours = { goalHours = it },
+        selectedColor = selectedColor,
+        onChangeColor = { selectedColor = it }
+    )
+
+    DeleteDialog(
+        onClickConfirmButton = { deleteLessonDialogState = false },
+        onDismissRequest = { deleteLessonDialogState = false },
+        title = "Delete Lesson",
+        text = "Do you want to delete lesson",
+        isOpen = deleteLessonDialogState
+    )
+
+    DeleteDialog(
+        onClickConfirmButton = { deleteSubjectDialogState = false },
+        onDismissRequest = { deleteSubjectDialogState = false },
+        title = "Delete Subject",
+        text = "Do you want to delete subject",
+        isOpen = deleteSubjectDialogState
+    )
+
+
     Scaffold(
         modifier = Modifier
             .nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -84,13 +143,13 @@ fun SubjectScreen(
                 scrollBehavior = scrollBehavior,
                 title = "English",
                 onBackClick = { /*TODO*/ },
-                onDeleteClick = { /*TODO*/ },
-                onEditClick = { }
+                onDeleteClick = { deleteSubjectDialogState = true },
+                onEditClick = { addDialogState = true }
             )
         },
         floatingActionButton = {
             ExtendedFloatingActionButton(
-                onClick = { /*TODO*/ },
+                onClick = { },
                 icon = {
                     Icon(imageVector = Icons.Default.Add, contentDescription = "Add")
                 },
@@ -118,7 +177,7 @@ fun SubjectScreen(
             }
             taskList(
                 title = "Upcoming tasks",
-                taskList = tasks,
+                taskList = emptyList(),
                 text = "You dont have any task",
                 onClickCard = { },
                 onClickCheckBox = { }
@@ -128,7 +187,7 @@ fun SubjectScreen(
             }
             taskList(
                 title = "Completed tasks",
-                taskList = tasks,
+                taskList = emptyList(),
                 text = "You dont have any completed task",
                 onClickCard = { },
                 onClickCheckBox = { }
@@ -138,9 +197,9 @@ fun SubjectScreen(
             }
             lessonList(
                 title = "Recent lessons",
-                lessonList = lessons,
+                lessonList = emptyList(),
                 text = "You dont have any lesson",
-                onClickDelete = { }
+                onClickDelete = { deleteLessonDialogState = true }
             )
         }
     }

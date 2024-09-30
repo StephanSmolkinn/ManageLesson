@@ -27,7 +27,7 @@ fun EmptyListSection(
     Spacer(modifier = Modifier.height(16.dp))
     Text(
         modifier = Modifier.fillMaxWidth(),
-        text = "You dont have any subject",
+        text = text,
         style = MaterialTheme.typography.bodySmall,
         textAlign = TextAlign.Center,
         color = Color.Gray

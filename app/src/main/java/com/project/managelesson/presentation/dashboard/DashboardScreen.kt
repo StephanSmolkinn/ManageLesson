@@ -38,6 +38,7 @@ import com.project.managelesson.domain.model.Lesson
 import com.project.managelesson.domain.model.Subject
 import com.project.managelesson.domain.model.Task
 import com.project.managelesson.presentation.common_components.AddDialog
+import com.project.managelesson.presentation.common_components.DeleteDialog
 import com.project.managelesson.presentation.dashboard.components.CountCard
 import com.project.managelesson.presentation.dashboard.components.EmptyListSection
 import com.project.managelesson.presentation.dashboard.components.SubjectCard
@@ -75,7 +76,10 @@ fun DashboardScreen() {
         Lesson(1, 0L, 5L, "English", 0)
     )
 
-    var stateDialog by rememberSaveable {
+    var addDialogState by rememberSaveable {
+        mutableStateOf(false)
+    }
+    var deleteDialogState by rememberSaveable {
         mutableStateOf(false)
     }
 
@@ -92,16 +96,24 @@ fun DashboardScreen() {
     }
 
     AddDialog(
-        onClickConfirmButton = { stateDialog = false },
-        onDismissRequest = { stateDialog = false },
+        onClickConfirmButton = { addDialogState = false },
+        onDismissRequest = { addDialogState = false },
         title = "Add Subject",
-        isOpen = stateDialog,
+        isOpen = addDialogState,
         subjectName = subjectName,
         goalHours = goalHours,
         onChangeName = { subjectName = it },
         onChangeGoalHours = { goalHours = it },
         selectedColor = selectedColor,
         onChangeColor = { selectedColor = it }
+    )
+
+    DeleteDialog(
+        onClickConfirmButton = { deleteDialogState = false },
+        onDismissRequest = { deleteDialogState = false },
+        title = "Delete Lesson",
+        text = "Do you want to delete lesson",
+        isOpen = deleteDialogState
     )
 
     Scaffold(
@@ -129,7 +141,7 @@ fun DashboardScreen() {
                     subjectList = test,
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
-                        stateDialog = true
+                        addDialogState = true
                     }
                 )
             }
@@ -160,7 +172,7 @@ fun DashboardScreen() {
                 title = "Recent lessons",
                 lessonList = lessons,
                 text = "You dont have any lesson",
-                onClickDelete = { }
+                onClickDelete = { deleteDialogState = true }
             )
         }
     }

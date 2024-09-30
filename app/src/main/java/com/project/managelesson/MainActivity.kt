@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.project.managelesson.presentation.dashboard.DashboardScreen
 import com.project.managelesson.presentation.subject.SubjectScreen
+import com.project.managelesson.presentation.task.TaskScreen
 import com.project.managelesson.presentation.theme.ManageLessonTheme
 
 class MainActivity : ComponentActivity() {
@@ -12,7 +13,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ManageLessonTheme {
-                SubjectScreen()
+                TaskScreen()
             }
         }
     }
