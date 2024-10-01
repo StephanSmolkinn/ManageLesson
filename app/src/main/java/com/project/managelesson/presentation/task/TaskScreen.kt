@@ -23,7 +23,6 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
-import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -33,10 +32,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -45,10 +46,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.project.managelesson.presentation.common_components.DeleteDialog
 import com.project.managelesson.presentation.common_components.TaskCheckBox
+import com.project.managelesson.presentation.task.components.SubjectsBottomSheet
 import com.project.managelesson.presentation.task.components.TaskDatePickerDialog
 import com.project.managelesson.presentation.theme.Blue
+import com.project.managelesson.test
 import com.project.managelesson.utils.Priority
 import com.project.managelesson.utils.millisToDateString
+import kotlinx.coroutines.launch
 import java.time.Instant
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -69,9 +73,16 @@ fun TaskScreen() {
     val taskDatePicker = rememberDatePickerState(
         initialSelectedDateMillis = Instant.now().toEpochMilli()
     )
-    var stateOpenTaskDatePicker by rememberSaveable {
+    var openTaskDatePickerState by rememberSaveable {
         mutableStateOf(false)
     }
+
+    val sheetState = rememberModalBottomSheetState()
+    var openBottomSheet by remember {
+        mutableStateOf(false)
+    }
+    val scope = rememberCoroutineScope()
+    
 
     DeleteDialog(
         onClickConfirmButton = { deleteTaskDialogState = false },
@@ -83,9 +94,22 @@ fun TaskScreen() {
 
     TaskDatePickerDialog(
         state = taskDatePicker,
-        isOpen = stateOpenTaskDatePicker,
-        onClickDismissRequest = { stateOpenTaskDatePicker = false },
-        onClickConfirmButton = { stateOpenTaskDatePicker = false }
+        isOpen = openTaskDatePickerState,
+        onClickDismissRequest = { openTaskDatePickerState = false },
+        onClickConfirmButton = { openTaskDatePickerState = false }
+    )
+
+    SubjectsBottomSheet(
+        sheetState = sheetState,
+        isOpen = openBottomSheet,
+        subjectList = test,
+        onClickDismiss = { openBottomSheet = false },
+        onClickSubject = {
+            scope.launch { sheetState.hide() }.invokeOnCompletion {
+                if (!sheetState.isVisible)
+                    openBottomSheet = false
+            }
+        }
     )
 
     Scaffold(
@@ -135,7 +159,7 @@ fun TaskScreen() {
                     text = taskDatePicker.selectedDateMillis.millisToDateString(),
                     style = MaterialTheme.typography.bodyLarge
                 )
-                IconButton(onClick = { stateOpenTaskDatePicker = true }) {
+                IconButton(onClick = { openTaskDatePickerState = true }) {
                     Icon(
                         imageVector = Icons.Default.DateRange,
                         contentDescription = "Select date"
@@ -178,7 +202,7 @@ fun TaskScreen() {
                     text = "English",
                     style = MaterialTheme.typography.bodyLarge
                 )
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(onClick = { openBottomSheet = true }) {
                     Icon(
                         imageVector = Icons.Default.ArrowDropDown,
                         contentDescription = "Select subject"
