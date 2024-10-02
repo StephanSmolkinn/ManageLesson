@@ -25,16 +25,60 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.project.managelesson.lessons
+import com.project.managelesson.presentation.common_components.DeleteDialog
 import com.project.managelesson.presentation.common_components.lessonList
+import com.project.managelesson.presentation.task.components.SubjectsBottomSheet
+import com.project.managelesson.test
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LessonScreen() {
+
+    var deleteLessonDialogState by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    val sheetState = rememberModalBottomSheetState()
+    var openBottomSheet by remember {
+        mutableStateOf(false)
+    }
+    val scope = rememberCoroutineScope()
+
+    DeleteDialog(
+        onClickConfirmButton = { deleteLessonDialogState = false },
+        onDismissRequest = { deleteLessonDialogState = false },
+        title = "Delete lesson",
+        text = "Do you want to delete lesson?",
+        isOpen = deleteLessonDialogState
+    )
+
+    SubjectsBottomSheet(
+        sheetState = sheetState,
+        isOpen = openBottomSheet,
+        subjectList = test,
+        onClickDismiss = { openBottomSheet = false },
+        onClickSubject = {
+            scope.launch { sheetState.hide() }.invokeOnCompletion {
+                if (!sheetState.isVisible)
+                    openBottomSheet = false
+            }
+        }
+    )
+
     Scaffold(
         topBar = { LessonTopBar(onBackClick = { }) }
     ) {
@@ -56,7 +100,7 @@ fun LessonScreen() {
                         .fillMaxWidth()
                         .padding(horizontal = 12.dp),
                     subject = "English",
-                    onClickSubject = { }
+                    onClickSubject = { openBottomSheet = true }
                 )
             }
             item {
@@ -76,7 +120,7 @@ fun LessonScreen() {
                 title = "Lessons history",
                 lessonList = lessons,
                 text = "You dont have any lesson",
-                onClickDelete = {  }
+                onClickDelete = { deleteLessonDialogState = true }
             )
         }
     }
