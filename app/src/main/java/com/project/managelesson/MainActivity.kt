@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import com.project.managelesson.domain.model.Lesson
 import com.project.managelesson.domain.model.Subject
 import com.project.managelesson.domain.model.Task
+import com.project.managelesson.navigation.Navigation
 import com.project.managelesson.presentation.dashboard.DashboardScreen
 import com.project.managelesson.presentation.lesson.LessonScreen
 import com.project.managelesson.presentation.subject.SubjectScreen
@@ -17,7 +18,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ManageLessonTheme {
-                LessonScreen()
+                Navigation()
             }
         }
     }
@@ -25,10 +26,10 @@ class MainActivity : ComponentActivity() {
 
 val test = listOf(
     Subject(0, "Physics", 12.0, color = Subject.subjectColor[0],),
-    Subject(0,"Maths", 12.6, color = Subject.subjectColor[1]),
-    Subject(0,"English", 22.9, color = Subject.subjectColor[2]),
-    Subject(0,"Geology", 9.0, color = Subject.subjectColor[3]),
-    Subject(0,"Physics", 52.0, color = Subject.subjectColor[4])
+    Subject(1,"Maths", 12.6, color = Subject.subjectColor[1]),
+    Subject(2,"English", 22.9, color = Subject.subjectColor[2]),
+    Subject(3,"Geology", 9.0, color = Subject.subjectColor[3]),
+    Subject(4,"Physics", 52.0, color = Subject.subjectColor[4])
 )
 
 val tasks = listOf(

@@ -44,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.project.managelesson.presentation.common_components.DeleteDialog
 import com.project.managelesson.presentation.common_components.TaskCheckBox
 import com.project.managelesson.presentation.task.components.SubjectsBottomSheet
@@ -57,7 +58,9 @@ import java.time.Instant
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TaskScreen() {
+fun TaskScreen(
+    navController: NavController
+) {
 
     val titleState = remember {
         mutableStateOf("")
@@ -118,7 +121,7 @@ fun TaskScreen() {
                 isCompleted = false,
                 isTaskExist = true,
                 checkBoxColor = Blue,
-                onBackClick = {  },
+                onBackClick = { navController.navigateUp() },
                 onCheckBoxClick = {  },
                 onDeleteClick = { deleteTaskDialogState = true }
             )

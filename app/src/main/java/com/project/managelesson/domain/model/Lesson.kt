@@ -1,6 +1,11 @@
 package com.project.managelesson.domain.model
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity
 data class Lesson(
+    @PrimaryKey(autoGenerate = true)
     val id: Int,
     val date: Long,
     val duration: Long,

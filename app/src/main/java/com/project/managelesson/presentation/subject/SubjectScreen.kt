@@ -42,6 +42,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.project.managelesson.domain.model.Lesson
 import com.project.managelesson.domain.model.Subject
 import com.project.managelesson.domain.model.Task
@@ -50,11 +51,13 @@ import com.project.managelesson.presentation.common_components.DeleteDialog
 import com.project.managelesson.presentation.dashboard.components.CountCard
 import com.project.managelesson.presentation.common_components.lessonList
 import com.project.managelesson.presentation.common_components.taskList
+import com.project.managelesson.utils.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SubjectScreen(
-
+    navController: NavController,
+    subjectId: Int?
 ) {
 
     val stateList = rememberLazyListState()
@@ -65,12 +68,12 @@ fun SubjectScreen(
 
     val tasks = listOf(
         Task(1, title = "Task23232", "Do something good", 0, 0L, "", true, 0),
-        Task(1,title = "Task4343", "Do something good", 1, 0L, "", false, 0),
-        Task(1,title = "Task", "Do something good", 1, 0L, "", true, 0),
-        Task(1,title = "Task", "Do something good", 2, 0L, "", false, 0),
-        Task(1,title = "Task435454", "Do something good", 0, 0L, "", true, 0),
-        Task(1,title = "Task", "Do something good", 2, 0L, "", true, 0),
-        Task(1,title = "Task5543", "Do something good", 0, 0L, "", true, 0),
+        Task(1, title = "Task4343", "Do something good", 1, 0L, "", false, 0),
+        Task(1, title = "Task", "Do something good", 1, 0L, "", true, 0),
+        Task(1, title = "Task", "Do something good", 2, 0L, "", false, 0),
+        Task(1, title = "Task435454", "Do something good", 0, 0L, "", true, 0),
+        Task(1, title = "Task", "Do something good", 2, 0L, "", true, 0),
+        Task(1, title = "Task5543", "Do something good", 0, 0L, "", true, 0),
         Task(1, title = "Task", "Do something good", 2, 0L, "", true, 0)
     )
 
@@ -142,21 +145,27 @@ fun SubjectScreen(
             SubjectTopBar(
                 scrollBehavior = scrollBehavior,
                 title = "English",
-                onBackClick = { /*TODO*/ },
+                onBackClick = { navController.navigateUp() },
                 onDeleteClick = { deleteSubjectDialogState = true },
                 onEditClick = { addDialogState = true }
             )
         },
         floatingActionButton = {
             ExtendedFloatingActionButton(
-                onClick = { },
+                onClick = {
+                    val taskId = null
+                    navController.run {
+                        navigate("${Screen.TaskScreen.route}?taskId={$taskId}&subjectId={$subjectId}")
+                        println("Subject = $subjectId")
+                    }
+                },
                 icon = {
                     Icon(imageVector = Icons.Default.Add, contentDescription = "Add")
                 },
                 text = { Text(text = "Add task") },
                 shape = CircleShape,
                 expanded = stateFabExpanded.value
-            ) 
+            )
         }
     ) {
         LazyColumn(
@@ -177,9 +186,12 @@ fun SubjectScreen(
             }
             taskList(
                 title = "Upcoming tasks",
-                taskList = emptyList(),
+                taskList = tasks,
                 text = "You dont have any task",
-                onClickCard = { },
+                onClickCard = { taskId ->
+                    val idSubject = null
+                    navController.navigate("${Screen.TaskScreen.route}?taskId=${taskId}&subjectId={$idSubject}")
+                },
                 onClickCheckBox = { }
             )
             item {
@@ -187,9 +199,12 @@ fun SubjectScreen(
             }
             taskList(
                 title = "Completed tasks",
-                taskList = emptyList(),
+                taskList = tasks,
                 text = "You dont have any completed task",
-                onClickCard = { },
+                onClickCard = { taskId ->
+                    val idSubject = null
+                    navController.navigate("${Screen.TaskScreen.route}?taskId=${taskId}&subjectId={$idSubject}")
+                },
                 onClickCheckBox = { }
             )
             item {
@@ -197,7 +212,7 @@ fun SubjectScreen(
             }
             lessonList(
                 title = "Recent lessons",
-                lessonList = emptyList(),
+                lessonList = lessons,
                 text = "You dont have any lesson",
                 onClickDelete = { deleteLessonDialogState = true }
             )

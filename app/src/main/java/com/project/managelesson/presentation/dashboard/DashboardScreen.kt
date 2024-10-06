@@ -33,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.project.managelesson.R
 import com.project.managelesson.domain.model.Lesson
 import com.project.managelesson.domain.model.Subject
@@ -47,9 +48,12 @@ import com.project.managelesson.presentation.common_components.lessonList
 import com.project.managelesson.presentation.common_components.taskList
 import com.project.managelesson.tasks
 import com.project.managelesson.test
+import com.project.managelesson.utils.Screen
 
 @Composable
-fun DashboardScreen() {
+fun DashboardScreen(
+    navController: NavController
+) {
 
     var addDialogState by rememberSaveable {
         mutableStateOf(false)
@@ -117,12 +121,15 @@ fun DashboardScreen() {
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
                         addDialogState = true
+                    },
+                    onSubjectClick = { subjectId ->
+                        navController.navigate("${Screen.SubjectScreen.route}?subjectId=${subjectId}")
                     }
                 )
             }
             item {
                 Button(
-                    onClick = { },
+                    onClick = { navController.navigate(Screen.LessonScreen.route) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 32.dp, vertical = 18.dp)
@@ -137,7 +144,10 @@ fun DashboardScreen() {
                 title = "Upcoming tasks",
                 taskList = tasks,
                 text = "You dont have any task",
-                onClickCard = { },
+                onClickCard = { taskId ->
+                    val subjectId = null
+                    navController.navigate("${Screen.TaskScreen.route}?taskId=${taskId}&subjectId={$subjectId}")
+                },
                 onClickCheckBox = { }
             )
             item {
@@ -200,7 +210,8 @@ private fun CountCardSection(
 private fun SubjectCardSection(
     modifier: Modifier = Modifier,
     subjectList: List<Subject>,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onSubjectClick: (Int?) -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -239,7 +250,7 @@ private fun SubjectCardSection(
                 SubjectCard(
                     title = it.title,
                     color = it.color,
-                    onClick = { }
+                    onClick = { onSubjectClick(it.id) }
                 )
             }
         }

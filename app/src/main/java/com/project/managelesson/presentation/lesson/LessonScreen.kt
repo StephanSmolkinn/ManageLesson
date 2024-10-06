@@ -37,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.project.managelesson.lessons
 import com.project.managelesson.presentation.common_components.DeleteDialog
 import com.project.managelesson.presentation.common_components.lessonList
@@ -46,7 +47,9 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LessonScreen() {
+fun LessonScreen(
+    navController: NavController
+) {
 
     var deleteLessonDialogState by rememberSaveable {
         mutableStateOf(false)
@@ -80,7 +83,7 @@ fun LessonScreen() {
     )
 
     Scaffold(
-        topBar = { LessonTopBar(onBackClick = { }) }
+        topBar = { LessonTopBar(onBackClick = { navController.navigateUp() }) }
     ) {
         LazyColumn(
             modifier = Modifier
