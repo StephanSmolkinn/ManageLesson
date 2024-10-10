@@ -4,8 +4,9 @@ import com.project.managelesson.data.data_source.TaskDao
 import com.project.managelesson.domain.model.Task
 import com.project.managelesson.domain.repository.TaskRepository
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class TaskRepositoryImpl(
+class TaskRepositoryImpl @Inject constructor(
     private val taskDao: TaskDao
 ): TaskRepository {
     override suspend fun upsertTask(task: Task) {

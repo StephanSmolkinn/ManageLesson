@@ -4,8 +4,9 @@ import com.project.managelesson.data.data_source.LessonDao
 import com.project.managelesson.domain.model.Lesson
 import com.project.managelesson.domain.repository.LessonRepository
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class LessonRepositoryImpl(
+class LessonRepositoryImpl @Inject constructor(
     private val lessonDao: LessonDao
 ): LessonRepository {
     override suspend fun insertLesson(lesson: Lesson) {

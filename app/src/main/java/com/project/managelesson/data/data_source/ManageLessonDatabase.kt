@@ -12,7 +12,7 @@ import com.project.managelesson.domain.model.Task
     version = 1
 )
 @TypeConverters(ColorListConverter::class)
-abstract class AppDatabase: RoomDatabase() {
+abstract class ManageLessonDatabase: RoomDatabase() {
 
     abstract val subjectDao: SubjectDao
 
