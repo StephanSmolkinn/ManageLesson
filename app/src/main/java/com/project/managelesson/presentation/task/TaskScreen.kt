@@ -44,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.project.managelesson.presentation.common_components.DeleteDialog
 import com.project.managelesson.presentation.common_components.TaskCheckBox
@@ -59,7 +60,8 @@ import java.time.Instant
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskScreen(
-    navController: NavController
+    navController: NavController,
+    taskViewModel: TaskViewModel = hiltViewModel()
 ) {
 
     val titleState = remember {

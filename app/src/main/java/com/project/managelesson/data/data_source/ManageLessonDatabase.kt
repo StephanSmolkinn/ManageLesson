@@ -14,11 +14,11 @@ import com.project.managelesson.domain.model.Task
 @TypeConverters(ColorListConverter::class)
 abstract class ManageLessonDatabase: RoomDatabase() {
 
-    abstract val subjectDao: SubjectDao
+    abstract fun subjectDao(): SubjectDao
 
-    abstract val taskDao: TaskDao
+    abstract fun taskDao(): TaskDao
 
-    abstract val lessonDao: LessonDao
+    abstract fun lessonDao(): LessonDao
 
     companion object {
         const val DATABASE_NAME = "manage_lesson_db"

@@ -42,6 +42,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.project.managelesson.domain.model.Lesson
 import com.project.managelesson.domain.model.Subject
@@ -57,7 +58,8 @@ import com.project.managelesson.utils.Screen
 @Composable
 fun SubjectScreen(
     navController: NavController,
-    subjectId: Int?
+    subjectId: Int?,
+    subjectViewModel: SubjectViewModel = hiltViewModel()
 ) {
 
     val stateList = rememberLazyListState()
