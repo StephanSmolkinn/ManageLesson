@@ -2,6 +2,7 @@ package com.project.managelesson.di
 
 import com.project.managelesson.data.repository.LessonRepositoryImpl
 import com.project.managelesson.data.repository.SubjectRepositoryImpl
+import com.project.managelesson.data.repository.TaskRepositoryImpl
 import com.project.managelesson.domain.repository.LessonRepository
 import com.project.managelesson.domain.repository.SubjectRepository
 import com.project.managelesson.domain.repository.TaskRepository
@@ -25,7 +26,7 @@ abstract class RepositoryModule {
     @Singleton
     @Binds
     abstract fun bindTaskRepository(
-        taskRepositoryImpl: SubjectRepositoryImpl
+        taskRepositoryImpl: TaskRepositoryImpl
     ): TaskRepository
 
     @Singleton

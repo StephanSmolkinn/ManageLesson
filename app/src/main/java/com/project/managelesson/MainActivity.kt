@@ -3,6 +3,7 @@ package com.project.managelesson
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.ui.graphics.toArgb
 import com.project.managelesson.domain.model.Lesson
 import com.project.managelesson.domain.model.Subject
 import com.project.managelesson.domain.model.Task
@@ -27,11 +28,11 @@ class MainActivity : ComponentActivity() {
 }
 
 val test = listOf(
-    Subject(0, "Physics", 12.0, color = Subject.subjectColor[0],),
-    Subject(1,"Maths", 12.6, color = Subject.subjectColor[1]),
-    Subject(2,"English", 22.9, color = Subject.subjectColor[2]),
-    Subject(3,"Geology", 9.0, color = Subject.subjectColor[3]),
-    Subject(4,"Physics", 52.0, color = Subject.subjectColor[4])
+    Subject(0, "Physics", 12.0, color = Subject.subjectColor[0].map { it.toArgb() },),
+    Subject(1,"Maths", 12.6, color = Subject.subjectColor[1].map { it.toArgb() }),
+    Subject(2,"English", 22.9, color = Subject.subjectColor[2].map { it.toArgb() }),
+    Subject(3,"Geology", 9.0, color = Subject.subjectColor[3].map { it.toArgb() }),
+    Subject(4,"Physics", 52.0, color = Subject.subjectColor[4].map { it.toArgb() })
 )
 
 val tasks = listOf(

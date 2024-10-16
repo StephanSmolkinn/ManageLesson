@@ -9,7 +9,7 @@ import androidx.room.PrimaryKey
 ])
 data class Lesson(
     @PrimaryKey(autoGenerate = true)
-    val id: Int,
+    val id: Int? = null,
     val date: Long,
     val duration: Long,
     val relateSubject: String,

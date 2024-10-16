@@ -45,6 +45,7 @@ fun SubjectCard(
             )
             Text(
                 text = title,
+                maxLines = 1,
                 style = MaterialTheme.typography.headlineMedium,
                 color = Color.White
             )

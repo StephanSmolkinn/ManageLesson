@@ -12,10 +12,10 @@ import com.project.managelesson.presentation.theme.gradient5
 @Entity
 data class Subject(
     @PrimaryKey(autoGenerate = true)
-    val id: Int,
+    val id: Int? = null,
     val title: String,
     val goalHours: Double,
-    val color: List<Color>
+    val color: List<Int>
 ) {
     companion object {
         val subjectColor = listOf(gradient1, gradient2, gradient3, gradient4, gradient5)
