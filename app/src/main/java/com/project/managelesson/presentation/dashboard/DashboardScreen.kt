@@ -23,8 +23,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,14 +36,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.project.managelesson.R
-import com.project.managelesson.domain.model.Lesson
 import com.project.managelesson.domain.model.Subject
-import com.project.managelesson.domain.model.Task
-import com.project.managelesson.lessons
 import com.project.managelesson.presentation.common_components.AddDialog
 import com.project.managelesson.presentation.common_components.DeleteDialog
 import com.project.managelesson.presentation.dashboard.components.CountCard
@@ -47,15 +49,18 @@ import com.project.managelesson.presentation.dashboard.components.EmptyListSecti
 import com.project.managelesson.presentation.dashboard.components.SubjectCard
 import com.project.managelesson.presentation.common_components.lessonList
 import com.project.managelesson.presentation.common_components.taskList
-import com.project.managelesson.tasks
-import com.project.managelesson.test
 import com.project.managelesson.utils.Screen
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun DashboardScreen(
     navController: NavController,
     viewModel: DashboardViewModel = hiltViewModel()
 ) {
+
+    val state by viewModel.state.collectAsState()
+    val taskList by viewModel.taskList.collectAsState()
+    val lessonList by viewModel.lessonList.collectAsState()
 
     var addDialogState by rememberSaveable {
         mutableStateOf(false)
@@ -64,42 +69,53 @@ fun DashboardScreen(
         mutableStateOf(false)
     }
 
-    var subjectName by remember {
-        mutableStateOf("")
-    }
-
-    var goalHours by remember {
-        mutableStateOf("")
-    }
-
-    var selectedColor by remember {
-        mutableStateOf(Subject.subjectColor.random())
-    }
-
     AddDialog(
-        onClickConfirmButton = { addDialogState = false },
+        onClickConfirmButton = {
+            viewModel.onEvent(DashboardEvent.SaveSubject)
+            addDialogState = false
+        },
         onDismissRequest = { addDialogState = false },
         title = "Add Subject",
         isOpen = addDialogState,
-        subjectName = subjectName,
-        goalHours = goalHours,
-        onChangeName = { subjectName = it },
-        onChangeGoalHours = { goalHours = it },
-        selectedColor = selectedColor,
-        onChangeColor = { selectedColor = it }
+        subjectName = state.subjectName,
+        goalHours = state.goalLessonHours,
+        onChangeName = { viewModel.onEvent(DashboardEvent.OnSubjectNameChange(it)) },
+        onChangeGoalHours = { viewModel.onEvent(DashboardEvent.OnSubjectHoursChange(it)) },
+        selectedColor = state.subjectCardColor,
+        onChangeColor = { viewModel.onEvent(DashboardEvent.OnSubjectCardColorChange(it)) }
     )
 
     DeleteDialog(
-        onClickConfirmButton = { deleteDialogState = false },
+        onClickConfirmButton = {
+            viewModel.onEvent(DashboardEvent.DeleteLesson)
+            deleteDialogState = false
+        },
         onDismissRequest = { deleteDialogState = false },
         title = "Delete Lesson",
         text = "Do you want to delete lesson",
         isOpen = deleteDialogState
     )
 
+    val scaffoldState = remember {
+        SnackbarHostState()
+    }
+    
+    LaunchedEffect(key1 = true) {
+        viewModel.eventFlow.collectLatest { event ->
+            when (event) {
+                is DashboardViewModel.UiEvent.ShowSnackBar -> {
+                    scaffoldState.showSnackbar(message = event.message)
+                }
+            }
+        }
+    }
+
     Scaffold(
         topBar = {
             DashboardTopBar()
+        },
+        snackbarHost = {
+            SnackbarHost(hostState = scaffoldState)
         }
     ) {
         LazyColumn(
@@ -109,9 +125,9 @@ fun DashboardScreen(
         ) {
             item {
                 CountCardSection(
-                    subjectHours = 15,
-                    studiedHours = "15",
-                    goalHours = "15",
+                    subjectCount = state.totalSubjectCount,
+                    studiedHours = "${state.totalLessonHours}",
+                    goalHours = "%.2f".format(state.totalLessonGoalHours),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(12.dp)
@@ -119,7 +135,7 @@ fun DashboardScreen(
             }
             item {
                 SubjectCardSection(
-                    subjectList = test,
+                    subjectList = state.subjects,
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
                         addDialogState = true
@@ -144,22 +160,27 @@ fun DashboardScreen(
             }
             taskList(
                 title = "Upcoming tasks",
-                taskList = tasks,
+                taskList = taskList,
                 text = "You dont have any task",
                 onClickCard = { taskId ->
                     val subjectId = null
                     navController.navigate("${Screen.TaskScreen.route}?taskId=${taskId}&subjectId={$subjectId}")
                 },
-                onClickCheckBox = { }
+                onClickCheckBox = { task ->
+                    viewModel.onEvent(DashboardEvent.OnTaskChange(task))
+                }
             )
             item {
                 Spacer(modifier = Modifier.height(20.dp))
             }
             lessonList(
                 title = "Recent lessons",
-                lessonList = lessons,
+                lessonList = lessonList,
                 text = "You dont have any lesson",
-                onClickDelete = { deleteDialogState = true }
+                onClickDelete = { lesson ->
+                    viewModel.onEvent(DashboardEvent.OnDeleteLesson(lesson))
+                    deleteDialogState = true
+                }
             )
         }
     }
@@ -181,7 +202,7 @@ private fun DashboardTopBar() {
 @Composable
 private fun CountCardSection(
     modifier: Modifier = Modifier,
-    subjectHours: Int,
+    subjectCount: Int,
     studiedHours: String,
     goalHours: String
 ) {
@@ -191,7 +212,7 @@ private fun CountCardSection(
         CountCard(
             modifier = Modifier.weight(1f),
             title = "Subject count",
-            count = "$subjectHours"
+            count = "$subjectCount"
         )
         Spacer(modifier = Modifier.width(10.dp))
         CountCard(
@@ -251,7 +272,7 @@ private fun SubjectCardSection(
             items(subjectList) {
                 SubjectCard(
                     title = it.title,
-                    color = it.color,
+                    color = it.color.map { Color(it) },
                     onClick = { onSubjectClick(it.id) }
                 )
             }
