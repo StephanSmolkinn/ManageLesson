@@ -26,10 +26,15 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -53,14 +58,17 @@ import com.project.managelesson.presentation.dashboard.components.CountCard
 import com.project.managelesson.presentation.common_components.lessonList
 import com.project.managelesson.presentation.common_components.taskList
 import com.project.managelesson.utils.Screen
+import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SubjectScreen(
     navController: NavController,
     subjectId: Int?,
-    subjectViewModel: SubjectViewModel = hiltViewModel()
+    viewModel: SubjectViewModel = hiltViewModel()
 ) {
+
+    val state by viewModel.state.collectAsState()
 
     val stateList = rememberLazyListState()
     val stateFabExpanded = remember {
@@ -68,25 +76,9 @@ fun SubjectScreen(
     }
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
-    val tasks = listOf(
-        Task(1, title = "Task23232", "Do something good", 0, 0L, "", true, 0),
-        Task(1, title = "Task4343", "Do something good", 1, 0L, "", false, 0),
-        Task(1, title = "Task", "Do something good", 1, 0L, "", true, 0),
-        Task(1, title = "Task", "Do something good", 2, 0L, "", false, 0),
-        Task(1, title = "Task435454", "Do something good", 0, 0L, "", true, 0),
-        Task(1, title = "Task", "Do something good", 2, 0L, "", true, 0),
-        Task(1, title = "Task5543", "Do something good", 0, 0L, "", true, 0),
-        Task(1, title = "Task", "Do something good", 2, 0L, "", true, 0)
-    )
-
-    val lessons = listOf(
-        Lesson(1, 0L, 2L, "Physics", 0),
-        Lesson(1, 0L, 0L, "Maths", 0),
-        Lesson(1, 0L, 3L, "Physics", 0),
-        Lesson(1, 0L, 0L, "Geology", 0),
-        Lesson(1, 0L, 2L, "Physics", 0),
-        Lesson(1, 0L, 5L, "English", 0)
-    )
+    val scaffoldState = remember {
+        SnackbarHostState()
+    }
 
     var addDialogState by rememberSaveable {
         mutableStateOf(false)
@@ -98,33 +90,48 @@ fun SubjectScreen(
         mutableStateOf(false)
     }
 
-    var subjectName by remember {
-        mutableStateOf("")
-    }
+    LaunchedEffect(key1 = true) {
+        viewModel.eventFlow.collectLatest { event ->
+            when (event) {
+                is SubjectViewModel.UiEvent.ShowSnackBar -> {
+                    scaffoldState.showSnackbar(message = event.message, duration = SnackbarDuration.Long)
+                }
 
-    var goalHours by remember {
-        mutableStateOf("")
-    }
+                SubjectViewModel.UiEvent.UpdateSubject -> {
+                    addDialogState = false
+                }
 
-    var selectedColor by remember {
-        mutableStateOf(Subject.subjectColor.random())
+                SubjectViewModel.UiEvent.DeleteSubject -> {
+                    navController.navigateUp()
+                }
+            }
+        }
+    }
+    
+    LaunchedEffect(key1 = state.studyHours, key2 = state.goalLessonHours) {
+        viewModel.onEvent(SubjectEvent.UpdateProgress)
     }
 
     AddDialog(
-        onClickConfirmButton = { addDialogState = false },
-        onDismissRequest = { addDialogState = false },
+        onClickConfirmButton = {
+            viewModel.onEvent(SubjectEvent.UpdateSubject)
+        },
+        onDismissRequest = { },
         title = "Add Subject",
         isOpen = addDialogState,
-        subjectName = subjectName,
-        goalHours = goalHours,
-        onChangeName = { subjectName = it },
-        onChangeGoalHours = { goalHours = it },
-        selectedColor = selectedColor,
-        onChangeColor = { selectedColor = it }
+        subjectName = state.subjectName,
+        goalHours = state.goalLessonHours,
+        onChangeName = { viewModel.onEvent(SubjectEvent.OnSubjectNameChange(it)) },
+        onChangeGoalHours = { viewModel.onEvent(SubjectEvent.OnSubjectGoalHourChange(it)) },
+        selectedColor = state.cardColors,
+        onChangeColor = { viewModel.onEvent(SubjectEvent.OnSubjectCardColorChange(it)) }
     )
 
     DeleteDialog(
-        onClickConfirmButton = { deleteLessonDialogState = false },
+        onClickConfirmButton = {
+            deleteLessonDialogState = false
+            viewModel.onEvent(SubjectEvent.DeleteLesson)
+        },
         onDismissRequest = { deleteLessonDialogState = false },
         title = "Delete Lesson",
         text = "Do you want to delete lesson",
@@ -132,7 +139,10 @@ fun SubjectScreen(
     )
 
     DeleteDialog(
-        onClickConfirmButton = { deleteSubjectDialogState = false },
+        onClickConfirmButton = {
+            deleteSubjectDialogState = false
+            viewModel.onEvent(SubjectEvent.DeleteSubject)
+        },
         onDismissRequest = { deleteSubjectDialogState = false },
         title = "Delete Subject",
         text = "Do you want to delete subject",
@@ -146,7 +156,7 @@ fun SubjectScreen(
         topBar = {
             SubjectTopBar(
                 scrollBehavior = scrollBehavior,
-                title = "English",
+                title = state.subjectName,
                 onBackClick = { navController.navigateUp() },
                 onDeleteClick = { deleteSubjectDialogState = true },
                 onEditClick = { addDialogState = true }
@@ -168,6 +178,9 @@ fun SubjectScreen(
                 shape = CircleShape,
                 expanded = stateFabExpanded.value
             )
+        },
+        snackbarHost = {
+            SnackbarHost(hostState = scaffoldState)
         }
     ) {
         LazyColumn(
@@ -178,9 +191,9 @@ fun SubjectScreen(
         ) {
             item {
                 ViewSection(
-                    goalHours = "10",
-                    studiedHours = "5",
-                    progressStudy = 0.12,
+                    goalHours = state.goalLessonHours,
+                    studiedHours = "${state.studyHours}",
+                    progressStudy = state.progress,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(12.dp)
@@ -188,35 +201,38 @@ fun SubjectScreen(
             }
             taskList(
                 title = "Upcoming tasks",
-                taskList = tasks,
+                taskList = state.upcomingTaskList,
                 text = "You dont have any task",
                 onClickCard = { taskId ->
                     val idSubject = null
                     navController.navigate("${Screen.TaskScreen.route}?taskId=${taskId}&subjectId={$idSubject}")
                 },
-                onClickCheckBox = { }
+                onClickCheckBox = { viewModel.onEvent(SubjectEvent.OnTaskCompleteChange(it)) }
             )
             item {
                 Spacer(modifier = Modifier.height(20.dp))
             }
             taskList(
                 title = "Completed tasks",
-                taskList = tasks,
+                taskList = state.completedTaskList,
                 text = "You dont have any completed task",
                 onClickCard = { taskId ->
                     val idSubject = null
                     navController.navigate("${Screen.TaskScreen.route}?taskId=${taskId}&subjectId={$idSubject}")
                 },
-                onClickCheckBox = { }
+                onClickCheckBox = { viewModel.onEvent(SubjectEvent.OnTaskCompleteChange(it)) }
             )
             item {
                 Spacer(modifier = Modifier.height(20.dp))
             }
             lessonList(
                 title = "Recent lessons",
-                lessonList = lessons,
+                lessonList = state.recentLessonList,
                 text = "You dont have any lesson",
-                onClickDelete = { deleteLessonDialogState = true }
+                onClickDelete = {
+                    deleteLessonDialogState = true
+                    viewModel.onEvent(SubjectEvent.OnDeleteLesson(it))
+                }
             )
         }
     }
