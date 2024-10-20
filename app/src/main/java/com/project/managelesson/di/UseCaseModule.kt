@@ -5,12 +5,16 @@ import com.project.managelesson.domain.repository.SubjectRepository
 import com.project.managelesson.domain.repository.TaskRepository
 import com.project.managelesson.domain.use_case.DeleteSubjectUseCase
 import com.project.managelesson.domain.use_case.GetAllUpcomingTaskUseCase
+import com.project.managelesson.domain.use_case.GetCompleteTaskBySubjectUseCase
 import com.project.managelesson.domain.use_case.GetRecentFiveLessonUseCase
+import com.project.managelesson.domain.use_case.GetRecentTenLessonBySubjectUseCase
 import com.project.managelesson.domain.use_case.GetSubjectByIdUseCase
 import com.project.managelesson.domain.use_case.GetSubjectCountUseCase
 import com.project.managelesson.domain.use_case.GetSubjectHoursUseCase
 import com.project.managelesson.domain.use_case.GetSubjectsUseCase
+import com.project.managelesson.domain.use_case.GetSumDurationBySubjectUseCase
 import com.project.managelesson.domain.use_case.GetSumDurationUseCase
+import com.project.managelesson.domain.use_case.GetUpcomingTaskBySubjectUseCase
 import com.project.managelesson.domain.use_case.InsertLessonUseCase
 import com.project.managelesson.domain.use_case.ManageLessonUseCase
 import com.project.managelesson.domain.use_case.UpsertSubjectUseCase
@@ -41,7 +45,11 @@ object UseCaseModule {
             insertLessonUseCase = InsertLessonUseCase(lessonRepository),
             getSumDurationUseCase = GetSumDurationUseCase(lessonRepository),
             getAllUpcomingTaskUseCase = GetAllUpcomingTaskUseCase(taskRepository),
-            getRecentFiveLessonUseCase = GetRecentFiveLessonUseCase(lessonRepository)
+            getRecentFiveLessonUseCase = GetRecentFiveLessonUseCase(lessonRepository),
+            getUpcomingTaskBySubjectUseCase = GetUpcomingTaskBySubjectUseCase(taskRepository),
+            getCompleteTaskBySubjectUseCase = GetCompleteTaskBySubjectUseCase(taskRepository),
+            getRecentTenLessonBySubjectUseCase = GetRecentTenLessonBySubjectUseCase(lessonRepository),
+            getSumDurationBySubjectUseCase = GetSumDurationBySubjectUseCase(lessonRepository)
         )
     }
 

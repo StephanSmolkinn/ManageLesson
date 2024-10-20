@@ -1,13 +1,17 @@
 package com.project.managelesson.data.repository
 
+import com.project.managelesson.data.data_source.LessonDao
 import com.project.managelesson.data.data_source.SubjectDao
+import com.project.managelesson.data.data_source.TaskDao
 import com.project.managelesson.domain.model.Subject
 import com.project.managelesson.domain.repository.SubjectRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class SubjectRepositoryImpl @Inject constructor(
-    private val subjectDao: SubjectDao
+    private val subjectDao: SubjectDao,
+    private val taskDao: TaskDao,
+    private val lessonDao: LessonDao
 ): SubjectRepository {
     override suspend fun upsertSubject(subject: Subject) {
         subjectDao.upsertSubject(subject)
@@ -22,11 +26,13 @@ class SubjectRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getSubjectById(subjectId: Int): Subject? {
-        TODO("Not yet implemented")
+        return subjectDao.getSubjectById(subjectId)
     }
 
     override suspend fun deleteSubject(subjectId: Int) {
-        TODO("Not yet implemented")
+        taskDao.deleteTaskBySubjectId(subjectId)
+        lessonDao.deleteLessonBySubjectId(subjectId)
+        subjectDao.deleteSubject(subjectId)
     }
 
     override fun getAllSubject(): Flow<List<Subject>> {

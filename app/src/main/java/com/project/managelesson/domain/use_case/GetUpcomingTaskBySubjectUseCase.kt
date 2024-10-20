@@ -6,11 +6,11 @@ import com.project.managelesson.domain.util.sortTask
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class GetAllUpcomingTaskUseCase(
+class GetUpcomingTaskBySubjectUseCase(
     private val taskRepository: TaskRepository
 ) {
-    operator fun invoke(): Flow<List<Task>> {
-        return taskRepository.getAllUpcomingTask()
+    operator fun invoke(subjectId: Int): Flow<List<Task>> {
+        return taskRepository.getUpcomingTaskForSubject(subjectId)
             .map { tasks -> tasks.filter { it.isCompleted.not() } }
             .map { tasks -> sortTask(tasks) }
     }

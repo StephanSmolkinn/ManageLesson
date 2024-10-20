@@ -14,11 +14,11 @@ class LessonRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteLesson(lesson: Lesson) {
-        TODO("Not yet implemented")
+        lessonDao.deleteLesson(lesson)
     }
 
     override fun getRecentTenLessonBySubject(subjectId: Int): Flow<List<Lesson>> {
-        TODO("Not yet implemented")
+        return lessonDao.getAllLesson()
     }
 
     override fun getRecentFiveLesson(): Flow<List<Lesson>> {
@@ -26,7 +26,7 @@ class LessonRepositoryImpl @Inject constructor(
     }
 
     override fun getAllLesson(): Flow<List<Lesson>> {
-        TODO("Not yet implemented")
+        return lessonDao.getAllLesson()
     }
 
     override fun getSumDuration(): Flow<Long> {
@@ -34,6 +34,6 @@ class LessonRepositoryImpl @Inject constructor(
     }
 
     override fun getSumDurationBySubjectId(subjectId: Int): Flow<Long> {
-        TODO("Not yet implemented")
+        return lessonDao.getSumDurationBySubjectId(subjectId)
     }
 }

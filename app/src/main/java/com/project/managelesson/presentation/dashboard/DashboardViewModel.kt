@@ -42,7 +42,7 @@ class DashboardViewModel @Inject constructor(
             subjects = subjects,
             totalLessonHours = sumLessonDuration.toHours()
         )
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), DashboardState())
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000L), DashboardState())
 
     val taskList: StateFlow<List<Task>> = manageLessonUseCase.getAllUpcomingTaskUseCase()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000L), emptyList())
