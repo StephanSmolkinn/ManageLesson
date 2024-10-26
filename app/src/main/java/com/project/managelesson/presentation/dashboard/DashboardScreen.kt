@@ -164,7 +164,7 @@ fun DashboardScreen(
                 text = "You dont have any task",
                 onClickCard = { taskId ->
                     val subjectId = null
-                    navController.navigate("${Screen.TaskScreen.route}?taskId=${taskId}&subjectId={$subjectId}")
+                    navController.navigate("${Screen.TaskScreen.route}?taskId=$taskId&taskSubjectId=${subjectId}")
                 },
                 onClickCheckBox = { task ->
                     viewModel.onEvent(DashboardEvent.OnTaskChange(task))

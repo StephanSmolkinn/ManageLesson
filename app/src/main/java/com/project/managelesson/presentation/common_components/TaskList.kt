@@ -17,7 +17,6 @@ import androidx.compose.ui.unit.dp
 import com.project.managelesson.R
 import com.project.managelesson.domain.model.Task
 import com.project.managelesson.presentation.dashboard.components.EmptyListSection
-import com.project.managelesson.presentation.dashboard.components.TaskCard
 
 fun LazyListScope.taskList(
     title: String,

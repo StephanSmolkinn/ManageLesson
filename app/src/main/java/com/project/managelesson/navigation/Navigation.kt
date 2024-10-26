@@ -41,7 +41,7 @@ fun Navigation() {
             )
         }
         composable(
-            route = Screen.TaskScreen.route + "?taskId={taskId}&subjectId={subjectId}",
+            route = Screen.TaskScreen.route + "?taskId={taskId}&taskSubjectId={taskSubjectId}",
             arguments = listOf(
                 navArgument(
                     name = "taskId"
@@ -50,14 +50,18 @@ fun Navigation() {
                     defaultValue = -1
                 },
                 navArgument(
-                    name = "subjectId"
+                    name = "taskSubjectId"
                 ) {
                     type = NavType.IntType
                     defaultValue = -1
                 }
             )
         ) {
-            TaskScreen(navController = navController)
+            TaskScreen(
+                navController = navController,
+                subjectId = it.arguments?.getInt("taskSubjectId") ?: -1,
+                taskId = it.arguments?.getInt("taskId") ?: -1
+            )
         }
         composable(route = Screen.LessonScreen.route) {
             LessonScreen(navController = navController)

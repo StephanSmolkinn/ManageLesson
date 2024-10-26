@@ -18,3 +18,5 @@ data class Task(
     val isCompleted: Boolean,
     val subjectId: Int
 )
+
+class InvalidTaskException(message: String) : Exception(message)

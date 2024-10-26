@@ -47,8 +47,11 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavDeepLinkRequest
+import androidx.navigation.Navigation.findNavController
 import com.project.managelesson.domain.model.Lesson
 import com.project.managelesson.domain.model.Subject
 import com.project.managelesson.domain.model.Task
@@ -166,10 +169,7 @@ fun SubjectScreen(
             ExtendedFloatingActionButton(
                 onClick = {
                     val taskId = null
-                    navController.run {
-                        navigate("${Screen.TaskScreen.route}?taskId={$taskId}&subjectId={$subjectId}")
-                        println("Subject = $subjectId")
-                    }
+                    navController.navigate("${Screen.TaskScreen.route}?taskId={$taskId}&taskSubjectId=${subjectId}")
                 },
                 icon = {
                     Icon(imageVector = Icons.Default.Add, contentDescription = "Add")
@@ -204,8 +204,7 @@ fun SubjectScreen(
                 taskList = state.upcomingTaskList,
                 text = "You dont have any task",
                 onClickCard = { taskId ->
-                    val idSubject = null
-                    navController.navigate("${Screen.TaskScreen.route}?taskId=${taskId}&subjectId={$idSubject}")
+                    navController.navigate("${Screen.TaskScreen.route}?taskId=${taskId}&taskSubjectId=${subjectId}")
                 },
                 onClickCheckBox = { viewModel.onEvent(SubjectEvent.OnTaskCompleteChange(it)) }
             )
@@ -217,8 +216,7 @@ fun SubjectScreen(
                 taskList = state.completedTaskList,
                 text = "You dont have any completed task",
                 onClickCard = { taskId ->
-                    val idSubject = null
-                    navController.navigate("${Screen.TaskScreen.route}?taskId=${taskId}&subjectId={$idSubject}")
+                    navController.navigate("${Screen.TaskScreen.route}?taskId=${taskId}&taskSubjectId=${subjectId}")
                 },
                 onClickCheckBox = { viewModel.onEvent(SubjectEvent.OnTaskCompleteChange(it)) }
             )

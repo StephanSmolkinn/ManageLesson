@@ -1,4 +1,3 @@
-
 package com.project.managelesson.presentation.task
 
 import androidx.compose.foundation.background
@@ -29,11 +28,16 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,10 +54,9 @@ import com.project.managelesson.presentation.common_components.DeleteDialog
 import com.project.managelesson.presentation.common_components.TaskCheckBox
 import com.project.managelesson.presentation.task.components.SubjectsBottomSheet
 import com.project.managelesson.presentation.task.components.TaskDatePickerDialog
-import com.project.managelesson.presentation.theme.Blue
-import com.project.managelesson.test
 import com.project.managelesson.utils.Priority
 import com.project.managelesson.utils.millisToDateString
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.time.Instant
 
@@ -61,15 +64,12 @@ import java.time.Instant
 @Composable
 fun TaskScreen(
     navController: NavController,
-    taskViewModel: TaskViewModel = hiltViewModel()
+    subjectId: Int?,
+    taskId: Int?,
+    viewModel: TaskViewModel = hiltViewModel()
 ) {
 
-    val titleState = remember {
-        mutableStateOf("")
-    }
-    val descriptionState = remember {
-        mutableStateOf("")
-    }
+    val state by viewModel.state.collectAsState()
 
     var deleteTaskDialogState by rememberSaveable {
         mutableStateOf(false)
@@ -87,10 +87,37 @@ fun TaskScreen(
         mutableStateOf(false)
     }
     val scope = rememberCoroutineScope()
-    
+
+    val scaffoldState = remember {
+        SnackbarHostState()
+    }
+
+    LaunchedEffect(key1 = true) {
+        viewModel.eventFlow.collectLatest { event ->
+            when (event) {
+                is TaskViewModel.UiEvent.ShowSnackBar -> {
+                    scaffoldState.showSnackbar(
+                        message = event.message,
+                        duration = SnackbarDuration.Long
+                    )
+                }
+
+                TaskViewModel.UiEvent.SaveTask -> {
+                    navController.navigateUp()
+                }
+
+                TaskViewModel.UiEvent.DeleteTask -> {
+                    navController.navigateUp()
+                }
+            }
+        }
+    }
 
     DeleteDialog(
-        onClickConfirmButton = { deleteTaskDialogState = false },
+        onClickConfirmButton = {
+            viewModel.onEvent(TaskEvent.DeleteTask)
+            deleteTaskDialogState = false
+        },
         onDismissRequest = { deleteTaskDialogState = false },
         title = "Delete task",
         text = "Do you want to delete task?",
@@ -101,32 +128,39 @@ fun TaskScreen(
         state = taskDatePicker,
         isOpen = openTaskDatePickerState,
         onClickDismissRequest = { openTaskDatePickerState = false },
-        onClickConfirmButton = { openTaskDatePickerState = false }
+        onClickConfirmButton = {
+            viewModel.onEvent(TaskEvent.OnDateChange(date = taskDatePicker.selectedDateMillis))
+            openTaskDatePickerState = false
+        }
     )
 
     SubjectsBottomSheet(
         sheetState = sheetState,
         isOpen = openBottomSheet,
-        subjectList = test,
+        subjectList = state.subjectList,
         onClickDismiss = { openBottomSheet = false },
         onClickSubject = {
             scope.launch { sheetState.hide() }.invokeOnCompletion {
                 if (!sheetState.isVisible)
                     openBottomSheet = false
             }
+            viewModel.onEvent(TaskEvent.OnRelateSubject(it))
         }
     )
 
     Scaffold(
         topBar = {
             TaskTopBar(
-                isCompleted = false,
-                isTaskExist = true,
-                checkBoxColor = Blue,
+                isCompleted = state.isTaskComplete,
+                isTaskExist = state.taskId != null,
+                checkBoxColor = state.priority.color,
                 onBackClick = { navController.navigateUp() },
-                onCheckBoxClick = {  },
+                onCheckBoxClick = { viewModel.onEvent(TaskEvent.OnChangeComplete) },
                 onDeleteClick = { deleteTaskDialogState = true }
             )
+        },
+        snackbarHost = {
+            SnackbarHost(hostState = scaffoldState)
         }
     ) {
         Column(
@@ -138,16 +172,16 @@ fun TaskScreen(
         ) {
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
-                value = titleState.value,
-                onValueChange = { titleState.value = it },
+                value = state.taskName,
+                onValueChange = { viewModel.onEvent(TaskEvent.OnTaskNameChange(it)) },
                 label = { Text(text = "Title") },
                 singleLine = true
             )
             Spacer(modifier = Modifier.height(10.dp))
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
-                value = descriptionState.value,
-                onValueChange = { descriptionState.value = it },
+                value = state.description,
+                onValueChange = { viewModel.onEvent(TaskEvent.OnTaskDescriptionChange(it)) },
                 label = { Text(text = "Description") },
             )
             Spacer(modifier = Modifier.height(20.dp))
@@ -161,7 +195,7 @@ fun TaskScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = taskDatePicker.selectedDateMillis.millisToDateString(),
+                    text = state.date.millisToDateString(),
                     style = MaterialTheme.typography.bodyLarge
                 )
                 IconButton(onClick = { openTaskDatePickerState = true }) {
@@ -185,10 +219,12 @@ fun TaskScreen(
                     PriorityIconButton(
                         modifier = Modifier.weight(1f),
                         title = it.title,
-                        onClick = {  },
+                        onClick = { viewModel.onEvent(TaskEvent.OnPriorityChange(it)) },
                         backgroundColor = it.color,
-                        borderColor = if (it == Priority.MEDIUM) Color.White else Color.Transparent,
-                        titleColor = if (it == Priority.MEDIUM) Color.White else Color.Black.copy(alpha = 0.8f)
+                        borderColor = if (it == state.priority) Color.White else Color.Transparent,
+                        titleColor = if (it == state.priority) Color.White else Color.Black.copy(
+                            alpha = 0.8f
+                        )
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                 }
@@ -203,8 +239,12 @@ fun TaskScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                val subject =
+                    state.firstSubjectInListById?.title ?: state.subjectList.firstOrNull()?.title
+                    ?: ""
+
                 Text(
-                    text = "English",
+                    text = state.relateSubject ?: subject,
                     style = MaterialTheme.typography.bodyLarge
                 )
                 IconButton(onClick = { openBottomSheet = true }) {
@@ -218,7 +258,7 @@ fun TaskScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(32.dp),
-                onClick = { /*TODO*/ }
+                onClick = { viewModel.onEvent(TaskEvent.SaveTask) }
             ) {
                 Text(text = "Save task")
             }

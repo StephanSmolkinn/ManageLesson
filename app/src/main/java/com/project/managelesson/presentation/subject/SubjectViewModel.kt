@@ -8,15 +8,12 @@ import androidx.lifecycle.viewModelScope
 import com.project.managelesson.domain.model.InvalidSubjectException
 import com.project.managelesson.domain.model.Subject
 import com.project.managelesson.domain.use_case.ManageLessonUseCase
-import com.project.managelesson.presentation.dashboard.DashboardState
-import com.project.managelesson.presentation.dashboard.DashboardViewModel
 import com.project.managelesson.utils.toHours
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
@@ -53,7 +50,7 @@ class SubjectViewModel @Inject constructor(
     val eventFlow = _eventFlow.asSharedFlow()
 
     init {
-        geSubject()
+        getSubject()
     }
 
     fun onEvent(event: SubjectEvent) {
@@ -135,7 +132,7 @@ class SubjectViewModel @Inject constructor(
         }
     }
 
-    private fun geSubject() {
+    private fun getSubject() {
         viewModelScope.launch(Dispatchers.IO) {
             manageLessonUseCase.getSubjectByIdUseCase(subjectId)?.let { subject ->
                 _state.update {

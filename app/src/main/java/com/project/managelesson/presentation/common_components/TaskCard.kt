@@ -1,4 +1,4 @@
-package com.project.managelesson.presentation.dashboard.components
+package com.project.managelesson.presentation.common_components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.project.managelesson.domain.model.Task
 import com.project.managelesson.presentation.common_components.TaskCheckBox
 import com.project.managelesson.utils.Priority
+import com.project.managelesson.utils.millisToDateString
 
 @Composable
 fun TaskCard(
@@ -53,7 +54,7 @@ fun TaskCard(
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "${task.date}",
+                    text = task.date.millisToDateString(),
                     style = MaterialTheme.typography.bodySmall,
                 )
             }
