@@ -14,5 +14,8 @@ data class ManageLessonUseCase(
     val getUpcomingTaskBySubjectUseCase: GetUpcomingTaskBySubjectUseCase,
     val getCompleteTaskBySubjectUseCase: GetCompleteTaskBySubjectUseCase,
     val getRecentTenLessonBySubjectUseCase: GetRecentTenLessonBySubjectUseCase,
-    val getSumDurationBySubjectUseCase: GetSumDurationBySubjectUseCase
+    val getSumDurationBySubjectUseCase: GetSumDurationBySubjectUseCase,
+    val upsertTaskUseCase: UpsertTaskUseCase,
+    val getTaskUseCase: GetTaskUseCase,
+    val deleteTaskUseCase: DeleteTaskUseCase
 )
