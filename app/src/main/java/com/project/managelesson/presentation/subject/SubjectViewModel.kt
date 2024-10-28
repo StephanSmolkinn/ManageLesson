@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.project.managelesson.domain.model.InvalidSubjectException
 import com.project.managelesson.domain.model.Subject
 import com.project.managelesson.domain.use_case.ManageLessonUseCase
+import com.project.managelesson.presentation.dashboard.DashboardViewModel
 import com.project.managelesson.utils.toHours
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -101,7 +102,6 @@ class SubjectViewModel @Inject constructor(
                             manageLessonUseCase.deleteSubjectUseCase(it)
                         }
                         _eventFlow.emit(UiEvent.DeleteSubject)
-                        _eventFlow.emit(UiEvent.ShowSnackBar(message = "Subject deleted"))
                     } catch (e: Exception) {
                         _eventFlow.emit(UiEvent.ShowSnackBar(message = "Can not delete subject"))
                     }
@@ -128,7 +128,19 @@ class SubjectViewModel @Inject constructor(
                 }
             }
 
-            is SubjectEvent.OnTaskCompleteChange -> { }
+            is SubjectEvent.OnTaskCompleteChange -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    try {
+                        manageLessonUseCase.upsertTaskUseCase(
+                            task = event.task.copy(isCompleted = !event.task.isCompleted)
+                        )
+                        val message = if (!event.task.isCompleted) "Saved in completed tasks" else "Saved in upcoming tasks"
+                        _eventFlow.emit(UiEvent.ShowSnackBar(message = message))
+                    } catch (e: Exception) {
+                        _eventFlow.emit(UiEvent.ShowSnackBar(message = "Can not complete task"))
+                    }
+                }
+            }
         }
     }
 

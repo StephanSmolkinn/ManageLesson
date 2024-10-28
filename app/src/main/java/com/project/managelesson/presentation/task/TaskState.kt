@@ -12,6 +12,5 @@ data class TaskState(
     val priority: Priority = Priority.LOW,
     val relateSubject: String? = null,
     val subjectList: List<Subject> = emptyList(),
-    val firstSubjectInListById: Subject? = null,
     val subjectId: Int? = null
 )

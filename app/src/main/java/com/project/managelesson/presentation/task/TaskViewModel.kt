@@ -12,6 +12,7 @@ import com.project.managelesson.presentation.subject.SubjectViewModel
 import com.project.managelesson.utils.Priority
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -39,8 +40,7 @@ class TaskViewModel @Inject constructor(
         manageLessonUseCase.getSubjectsUseCase()
     ) { state, subjectList ->
         state.copy(
-            subjectList = subjectList,
-            firstSubjectInListById = if (subjectId != -1) subjectList.filter { it.id == subjectId }[0] else null
+            subjectList = subjectList
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(stopTimeoutMillis = 5000L), TaskState())
 
@@ -49,14 +49,13 @@ class TaskViewModel @Inject constructor(
 
     init {
         getTask()
+        getSubject()
     }
 
     fun onEvent(event: TaskEvent) {
         when(event) {
             TaskEvent.SaveTask -> {
                 viewModelScope.launch(Dispatchers.IO) {
-
-                    val subject = manageLessonUseCase.getSubjectByIdUseCase(subjectId)
 
                     try {
                         manageLessonUseCase.upsertTaskUseCase(
@@ -66,13 +65,12 @@ class TaskViewModel @Inject constructor(
                                 description = _state.value.description,
                                 priority = _state.value.priority.value,
                                 date = _state.value.date ?: Instant.now().toEpochMilli(),
-                                referToSubject = _state.value.relateSubject ?: subject?.title ?: return@launch,
+                                referToSubject = _state.value.relateSubject ?: return@launch,
                                 isCompleted = _state.value.isTaskComplete,
-                                subjectId = _state.value.subjectId ?: subject?.id ?: return@launch
+                                subjectId = _state.value.subjectId ?: return@launch
                             )
                         )
                         _eventFlow.emit(UiEvent.SaveTask)
-                        _eventFlow.emit(UiEvent.ShowSnackBar(message = "Task save"))
                     } catch (e: InvalidTaskException) {
                         _eventFlow.emit(UiEvent.ShowSnackBar(message = e.message ?: "Can not save task"))
                     }
@@ -86,7 +84,6 @@ class TaskViewModel @Inject constructor(
                             manageLessonUseCase.deleteTaskUseCase(it)
                         }
                         _eventFlow.emit(UiEvent.DeleteTask)
-                        _eventFlow.emit(UiEvent.ShowSnackBar(message = "Task deleted"))
                     } catch (e: Exception) {
                         _eventFlow.emit(UiEvent.ShowSnackBar(message = "Can not delete task"))
                     }
@@ -147,6 +144,19 @@ class TaskViewModel @Inject constructor(
                         priority = Priority.takePriority(task.priority),
                         relateSubject = task.referToSubject,
                         subjectId = task.subjectId,
+                    )
+                }
+            }
+        }
+    }
+
+    private fun getSubject() {
+        viewModelScope.launch(Dispatchers.IO) {
+            manageLessonUseCase.getSubjectByIdUseCase(subjectId)?.let { subject ->
+                _state.update {
+                    it.copy(
+                        relateSubject = subject.title,
+                        subjectId = subject.id
                     )
                 }
             }

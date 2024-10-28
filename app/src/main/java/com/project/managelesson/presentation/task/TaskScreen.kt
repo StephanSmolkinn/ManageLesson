@@ -239,12 +239,8 @@ fun TaskScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                val subject =
-                    state.firstSubjectInListById?.title ?: state.subjectList.firstOrNull()?.title
-                    ?: ""
-
                 Text(
-                    text = state.relateSubject ?: subject,
+                    text = state.relateSubject ?: "",
                     style = MaterialTheme.typography.bodyLarge
                 )
                 IconButton(onClick = { openBottomSheet = true }) {

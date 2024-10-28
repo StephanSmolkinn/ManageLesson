@@ -114,7 +114,18 @@ class DashboardViewModel @Inject constructor(
                 }
             }
 
-            is DashboardEvent.OnTaskChange -> TODO()
+            is DashboardEvent.OnTaskChange -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    try {
+                        manageLessonUseCase.upsertTaskUseCase(
+                            task = event.task.copy(isCompleted = !event.task.isCompleted)
+                        )
+                        _eventFlow.emit(UiEvent.ShowSnackBar(message = "Saved in completed tasks"))
+                    } catch (e: Exception) {
+                        _eventFlow.emit(UiEvent.ShowSnackBar(message = "Can not complete task"))
+                    }
+                }
+            }
         }
     }
 
