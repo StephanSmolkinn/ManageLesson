@@ -1,7 +1,8 @@
 package com.project.managelesson.navigation
 
+import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavArgument
+import androidx.navigation.NavDeepLink
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -13,6 +14,7 @@ import com.project.managelesson.presentation.subject.SubjectScreen
 import com.project.managelesson.presentation.task.TaskScreen
 import com.project.managelesson.utils.Screen
 
+@SuppressLint("RestrictedApi")
 @Composable
 fun Navigation() {
     val navController = rememberNavController()
@@ -63,7 +65,12 @@ fun Navigation() {
                 taskId = it.arguments?.getInt("taskId") ?: -1
             )
         }
-        composable(route = Screen.LessonScreen.route) {
+        composable(
+            route = Screen.LessonScreen.route,
+            deepLinks = listOf(
+                NavDeepLink(uri = "managelesson://dashboard/lesson")
+            )
+        ) {
             LessonScreen(navController = navController)
         }
     }

@@ -1,9 +1,11 @@
 package com.project.managelesson
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.ui.graphics.toArgb
+import androidx.core.app.ActivityCompat
 import com.project.managelesson.domain.model.Lesson
 import com.project.managelesson.domain.model.Subject
 import com.project.managelesson.domain.model.Task
@@ -23,6 +25,17 @@ class MainActivity : ComponentActivity() {
             ManageLessonTheme {
                 Navigation()
             }
+        }
+        requestPermission()
+    }
+
+    private fun requestPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                0
+            )
         }
     }
 }

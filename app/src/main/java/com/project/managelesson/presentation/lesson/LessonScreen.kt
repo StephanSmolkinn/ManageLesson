@@ -35,6 +35,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -44,6 +45,9 @@ import com.project.managelesson.presentation.common_components.DeleteDialog
 import com.project.managelesson.presentation.common_components.lessonList
 import com.project.managelesson.presentation.task.components.SubjectsBottomSheet
 import com.project.managelesson.test
+import com.project.managelesson.utils.Constants.SERVICE_ACTION_CANCEL
+import com.project.managelesson.utils.Constants.SERVICE_ACTION_START
+import com.project.managelesson.utils.Constants.SERVICE_ACTION_STOP
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -52,6 +56,8 @@ fun LessonScreen(
     navController: NavController,
     viewModel: LessonViewModel = hiltViewModel()
 ) {
+
+    val context = LocalContext.current
 
     var deleteLessonDialogState by rememberSaveable {
         mutableStateOf(false)
@@ -113,9 +119,24 @@ fun LessonScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(12.dp),
-                    onStartClick = { },
-                    onCancelClick = { },
-                    onFinishClick = { }
+                    onStartClick = {
+                        ServiceHelper.triggerService(
+                            context,
+                            SERVICE_ACTION_START
+                        )
+                    },
+                    onCancelClick = {
+                        ServiceHelper.triggerService(
+                            context,
+                            SERVICE_ACTION_CANCEL
+                        )
+                    },
+                    onFinishClick = {
+                        ServiceHelper.triggerService(
+                            context,
+                            SERVICE_ACTION_STOP
+                        )
+                    }
                 )
             }
             item {
