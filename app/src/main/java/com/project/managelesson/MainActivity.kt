@@ -1,9 +1,15 @@
 package com.project.managelesson
 
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Build
 import android.os.Bundle
+import android.os.IBinder
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.app.ActivityCompat
 import com.project.managelesson.domain.model.Lesson
@@ -12,6 +18,7 @@ import com.project.managelesson.domain.model.Task
 import com.project.managelesson.navigation.Navigation
 import com.project.managelesson.presentation.dashboard.DashboardScreen
 import com.project.managelesson.presentation.lesson.LessonScreen
+import com.project.managelesson.presentation.lesson.LessonTimerService
 import com.project.managelesson.presentation.subject.SubjectScreen
 import com.project.managelesson.presentation.task.TaskScreen
 import com.project.managelesson.presentation.theme.ManageLessonTheme
@@ -22,11 +29,26 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            ManageLessonTheme {
-                Navigation()
+            if (bound.value) {
+                ManageLessonTheme {
+                    Navigation(timerService)
+                }
             }
         }
         requestPermission()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Intent(this, LessonTimerService::class.java).also {
+            bindService(it, connectService, Context.BIND_AUTO_CREATE)
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        unbindService(connectService)
+        bound.value = false
     }
 
     private fun requestPermission() {
@@ -36,6 +58,21 @@ class MainActivity : ComponentActivity() {
                 arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
                 0
             )
+        }
+    }
+
+    private var bound = mutableStateOf(false)
+    private lateinit var timerService: LessonTimerService
+
+    private val connectService = object  : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            val binder = service as LessonTimerService.LessonTimerServiceBinder
+            timerService = binder.getService()
+            bound.value = true
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+            bound.value = false
         }
     }
 }

@@ -10,13 +10,16 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.project.managelesson.presentation.dashboard.DashboardScreen
 import com.project.managelesson.presentation.lesson.LessonScreen
+import com.project.managelesson.presentation.lesson.LessonTimerService
 import com.project.managelesson.presentation.subject.SubjectScreen
 import com.project.managelesson.presentation.task.TaskScreen
 import com.project.managelesson.utils.Screen
 
 @SuppressLint("RestrictedApi")
 @Composable
-fun Navigation() {
+fun Navigation(
+    timerService: LessonTimerService
+) {
     val navController = rememberNavController()
 
     NavHost(
@@ -71,7 +74,10 @@ fun Navigation() {
                 NavDeepLink(uri = "managelesson://dashboard/lesson")
             )
         ) {
-            LessonScreen(navController = navController)
+            LessonScreen(
+                navController = navController,
+                timerService = timerService
+            )
         }
     }
 }

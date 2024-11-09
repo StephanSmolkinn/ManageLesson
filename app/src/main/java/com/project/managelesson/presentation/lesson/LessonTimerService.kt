@@ -5,6 +5,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
 import android.content.Intent
+import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import androidx.compose.runtime.mutableStateOf
@@ -49,9 +50,9 @@ class LessonTimerService : Service() {
     var timerState = mutableStateOf(TimerState.Closed)
         private set
 
-    override fun onBind(intent: Intent?): IBinder? {
-        return null
-    }
+    private val binder = LessonTimerServiceBinder()
+
+    override fun onBind(intent: Intent?) = binder
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent?.action.let {
@@ -139,6 +140,10 @@ class LessonTimerService : Service() {
             this@LessonTimerService.minutes.value = minutes.toString().padStart(length = 2, padChar = '0')
             this@LessonTimerService.seconds.value = seconds.toString().padStart(length = 2, padChar = '0')
         }
+    }
+
+    inner class LessonTimerServiceBinder : Binder() {
+        fun getService(): LessonTimerService = this@LessonTimerService
     }
 
 }

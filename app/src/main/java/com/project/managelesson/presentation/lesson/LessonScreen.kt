@@ -1,5 +1,6 @@
 package com.project.managelesson.presentation.lesson
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -54,9 +55,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun LessonScreen(
     navController: NavController,
-    viewModel: LessonViewModel = hiltViewModel()
+    viewModel: LessonViewModel = hiltViewModel(),
+    timerService: LessonTimerService
 ) {
-
     val context = LocalContext.current
 
     var deleteLessonDialogState by rememberSaveable {
@@ -102,7 +103,10 @@ fun LessonScreen(
                 TimerLesson(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .aspectRatio(1f)
+                        .aspectRatio(1f),
+                    hours = timerService.hours.value,
+                    minutes = timerService.minutes.value,
+                    seconds = timerService.seconds.value
                 )
             }
             item {
@@ -121,22 +125,26 @@ fun LessonScreen(
                         .padding(12.dp),
                     onStartClick = {
                         ServiceHelper.triggerService(
-                            context,
-                            SERVICE_ACTION_START
+                            context = context,
+                            action = if (timerService.timerState.value == TimerState.Start)
+                                SERVICE_ACTION_STOP
+                            else
+                                SERVICE_ACTION_START
                         )
                     },
                     onCancelClick = {
                         ServiceHelper.triggerService(
-                            context,
-                            SERVICE_ACTION_CANCEL
+                            context = context,
+                            action = SERVICE_ACTION_CANCEL
                         )
                     },
                     onFinishClick = {
                         ServiceHelper.triggerService(
-                            context,
-                            SERVICE_ACTION_STOP
+                            context = context,
+                            action = SERVICE_ACTION_STOP
                         )
-                    }
+                    },
+                    timerState = timerService.timerState.value
                 )
             }
             item {
@@ -177,7 +185,10 @@ private fun LessonTopBar(
 
 @Composable
 private fun TimerLesson(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    hours: String,
+    minutes: String,
+    seconds: String
 ) {
     Box(
         modifier = modifier,
@@ -188,10 +199,26 @@ private fun TimerLesson(
                 .size(250.dp)
                 .border(5.dp, MaterialTheme.colorScheme.onSurfaceVariant, CircleShape)
         )
-        Text(
-            text = "00:05:39",
-            style = MaterialTheme.typography.titleLarge.copy(fontSize = 40.sp)
-        )
+        Row {
+            AnimatedContent(targetState = hours, label = hours) {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.titleLarge.copy(fontSize = 40.sp)
+                )
+            }
+            AnimatedContent(targetState = minutes, label = minutes) {
+                Text(
+                    text = ":$it:",
+                    style = MaterialTheme.typography.titleLarge.copy(fontSize = 40.sp)
+                )
+            }
+            AnimatedContent(targetState = seconds, label = seconds) {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.titleLarge.copy(fontSize = 40.sp)
+                )
+            }
+        }
     }
 }
 
@@ -233,12 +260,16 @@ private fun ButtonsControl(
     onStartClick: () -> Unit,
     onCancelClick: () -> Unit,
     onFinishClick: () -> Unit,
+    timerState: TimerState
 ) {
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Button(onClick = onCancelClick) {
+        Button(
+            onClick = onCancelClick,
+            enabled = timerState != TimerState.Start
+        ) {
             Text(
                 text = "Cancel",
                 modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
@@ -246,11 +277,18 @@ private fun ButtonsControl(
         }
         Button(onClick = onStartClick) {
             Text(
-                text = "Start",
+                text = when (timerState) {
+                    TimerState.Closed -> "Start"
+                    TimerState.Start -> "Stop"
+                    TimerState.Stop -> "Resume"
+                },
                 modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
             )
         }
-        Button(onClick = onFinishClick) {
+        Button(
+            onClick = onFinishClick,
+            enabled = timerState != TimerState.Start
+        ) {
             Text(
                 text = "Finish",
                 modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
