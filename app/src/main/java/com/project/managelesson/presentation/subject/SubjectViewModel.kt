@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.project.managelesson.domain.model.InvalidSubjectException
 import com.project.managelesson.domain.model.Subject
 import com.project.managelesson.domain.use_case.ManageLessonUseCase
-import com.project.managelesson.presentation.dashboard.DashboardViewModel
 import com.project.managelesson.utils.toHours
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -93,7 +92,18 @@ class SubjectViewModel @Inject constructor(
                 }
             }
 
-            SubjectEvent.DeleteLesson -> {  }
+            SubjectEvent.DeleteLesson -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    try {
+                        state.value.lesson?.let {
+                            manageLessonUseCase.deleteLessonUseCase(it)
+                        }
+                        _eventFlow.emit(UiEvent.ShowSnackBar(message = "Lesson has been deleted"))
+                    } catch (e: Exception) {
+                        _eventFlow.emit(UiEvent.ShowSnackBar(message = "Can not delete lesson"))
+                    }
+                }
+            }
 
             SubjectEvent.DeleteSubject -> {
                 viewModelScope.launch(Dispatchers.IO) {
@@ -108,7 +118,11 @@ class SubjectViewModel @Inject constructor(
                 }
             }
 
-            is SubjectEvent.OnDeleteLesson -> {  }
+            is SubjectEvent.OnDeleteLesson -> {
+                _state.update {
+                    it.copy(lesson = event.lesson)
+                }
+            }
 
             is SubjectEvent.OnSubjectCardColorChange -> {
                 _state.update {

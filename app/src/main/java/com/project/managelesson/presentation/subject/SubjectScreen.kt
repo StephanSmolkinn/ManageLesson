@@ -43,6 +43,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextOverflow
@@ -192,11 +193,12 @@ fun SubjectScreen(
             item {
                 ViewSection(
                     goalHours = state.goalLessonHours,
-                    studiedHours = "${state.studyHours}",
+                    studiedHours = "%.2f".format(state.studyHours),
                     progressStudy = state.progress,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(12.dp)
+                        .padding(12.dp),
+                    color = state.cardColors[0]
                 )
             }
             taskList(
@@ -285,7 +287,8 @@ private fun ViewSection(
     modifier: Modifier = Modifier,
     goalHours: String,
     studiedHours: String,
-    progressStudy: Double
+    progressStudy: Double,
+    color: Color
 ) {
 
     val progressState = remember(progressStudy) {
@@ -305,7 +308,7 @@ private fun ViewSection(
         Spacer(modifier = Modifier.width(10.dp))
         CountCard(
             modifier = Modifier.weight(1f),
-            title = "Study hours",
+            title = "Studied hours",
             count = studiedHours
         )
         Spacer(modifier = Modifier.width(10.dp))
@@ -325,6 +328,7 @@ private fun ViewSection(
                 progress = progressStudy.toFloat(),
                 strokeWidth = 4.dp,
                 strokeCap = StrokeCap.Round,
+                color = color
             )
             Text(text = "$progressState%")
         }
