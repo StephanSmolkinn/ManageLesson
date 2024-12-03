@@ -1,4 +1,4 @@
-package com.project.managelesson.domain.use_case
+package com.project.managelesson.domain.use_case.subject_use_case
 
 import com.project.managelesson.domain.repository.SubjectRepository
 import kotlinx.coroutines.flow.Flow

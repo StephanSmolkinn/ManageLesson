@@ -1,4 +1,4 @@
-package com.project.managelesson.domain.use_case
+package com.project.managelesson.domain.use_case.task_use_case
 
 import com.project.managelesson.domain.model.Task
 import com.project.managelesson.domain.repository.TaskRepository

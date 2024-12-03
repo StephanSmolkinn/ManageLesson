@@ -1,4 +1,4 @@
-package com.project.managelesson.domain.use_case
+package com.project.managelesson.domain.use_case.lesson_use_case
 
 import com.project.managelesson.domain.model.Lesson
 import com.project.managelesson.domain.repository.LessonRepository
