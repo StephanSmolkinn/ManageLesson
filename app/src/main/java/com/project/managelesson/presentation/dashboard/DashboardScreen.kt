@@ -126,8 +126,8 @@ fun DashboardScreen(
             item {
                 CountCardSection(
                     subjectCount = state.totalSubjectCount,
-                    studiedHours = "${state.totalLessonHours}",
-                    goalHours = "%.2f".format(state.totalLessonGoalHours),
+                    studiedHours = "%.2f".format(state.totalLessonHours),
+                    goalHours = "${state.totalLessonGoalHours}",
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(12.dp)

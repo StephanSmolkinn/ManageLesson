@@ -88,7 +88,18 @@ class DashboardViewModel @Inject constructor(
                 }
             }
 
-            DashboardEvent.DeleteLesson -> TODO()
+            DashboardEvent.DeleteLesson -> {
+                viewModelScope.launch(Dispatchers.IO) {
+                    try {
+                        state.value.lesson?.let {
+                            manageLessonUseCase.deleteLessonUseCase(it)
+                        }
+                        _eventFlow.emit(UiEvent.ShowSnackBar(message = "Lesson deleted"))
+                    } catch (e: Exception) {
+                        _eventFlow.emit(UiEvent.ShowSnackBar(message = "Can not delete lesson"))
+                    }
+                }
+            }
 
             is DashboardEvent.OnSubjectNameChange -> {
                 _state.update {
