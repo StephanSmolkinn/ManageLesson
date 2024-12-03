@@ -23,6 +23,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.project.managelesson.domain.model.Lesson
+import com.project.managelesson.utils.millisToDateString
+import com.project.managelesson.utils.toHours
 
 @Composable
 fun LessonCard(
@@ -49,13 +51,13 @@ fun LessonCard(
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "${lesson.date}",
+                    text = lesson.date.millisToDateString(),
                     style = MaterialTheme.typography.bodySmall,
                 )
             }
             Spacer(modifier = Modifier.weight(1f))
             Text(
-                text = "${lesson.duration} hr",
+                text = "%.2f".format(lesson.duration.toHours()),
                 style = MaterialTheme.typography.titleMedium,
             )
             IconButton(onClick = { onClickDelete() }) {

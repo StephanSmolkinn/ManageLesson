@@ -24,10 +24,15 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,7 +54,9 @@ import com.project.managelesson.test
 import com.project.managelesson.utils.Constants.SERVICE_ACTION_CANCEL
 import com.project.managelesson.utils.Constants.SERVICE_ACTION_START
 import com.project.managelesson.utils.Constants.SERVICE_ACTION_STOP
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlin.time.DurationUnit
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,6 +67,8 @@ fun LessonScreen(
 ) {
     val context = LocalContext.current
 
+    val state = viewModel.state.collectAsState()
+
     var deleteLessonDialogState by rememberSaveable {
         mutableStateOf(false)
     }
@@ -69,6 +78,41 @@ fun LessonScreen(
         mutableStateOf(false)
     }
     val scope = rememberCoroutineScope()
+
+    val scaffoldState = remember {
+        SnackbarHostState()
+    }
+
+    LaunchedEffect(key1 = true) {
+        viewModel.eventFlow.collectLatest { event ->
+            when (event) {
+                is LessonViewModel.UiEvent.ShowSnackBar -> {
+                    scaffoldState.showSnackbar(
+                        message = event.message,
+                        duration = SnackbarDuration.Short
+                    )
+                }
+
+                LessonViewModel.UiEvent.DeleteLesson -> {
+
+                }
+
+                LessonViewModel.UiEvent.SaveLesson -> {
+
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(key1 = state.value.subjectList) {
+        val subjectId = timerService.subjectId
+        viewModel.onEvent(
+            LessonEvent.UpdateSubject(
+                id = subjectId,
+                relateSubject = state.value.subjectList.find { it.id == subjectId }?.title
+            )
+        )
+    }
 
     DeleteDialog(
         onClickConfirmButton = { deleteLessonDialogState = false },
@@ -81,18 +125,22 @@ fun LessonScreen(
     SubjectsBottomSheet(
         sheetState = sheetState,
         isOpen = openBottomSheet,
-        subjectList = test,
+        subjectList = state.value.subjectList,
         onClickDismiss = { openBottomSheet = false },
         onClickSubject = {
             scope.launch { sheetState.hide() }.invokeOnCompletion {
                 if (!sheetState.isVisible)
                     openBottomSheet = false
             }
+            viewModel.onEvent(LessonEvent.OnRelateSubject(it))
         }
     )
 
     Scaffold(
-        topBar = { LessonTopBar(onBackClick = { navController.navigateUp() }) }
+        topBar = { LessonTopBar(onBackClick = { navController.navigateUp() }) },
+        snackbarHost = {
+            SnackbarHost(hostState = scaffoldState)
+        }
     ) {
         LazyColumn(
             modifier = Modifier
@@ -114,8 +162,9 @@ fun LessonScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 12.dp),
-                    subject = "English",
-                    onClickSubject = { openBottomSheet = true }
+                    subject = state.value.relateSubject ?: "",
+                    onClickSubject = { openBottomSheet = true },
+                    timerState = timerService.timerState.value
                 )
             }
             item {
@@ -124,13 +173,19 @@ fun LessonScreen(
                         .fillMaxWidth()
                         .padding(12.dp),
                     onStartClick = {
-                        ServiceHelper.triggerService(
-                            context = context,
-                            action = if (timerService.timerState.value == TimerState.Start)
-                                SERVICE_ACTION_STOP
-                            else
-                                SERVICE_ACTION_START
+                        viewModel.startLesson(
+                            timerState = timerService.timerState.value,
+                            start = {
+                                ServiceHelper.triggerService(
+                                    context = context,
+                                    action = if (timerService.timerState.value == TimerState.Start)
+                                        SERVICE_ACTION_STOP
+                                    else
+                                        SERVICE_ACTION_START
+                                )
+                            }
                         )
+                        timerService.subjectId = state.value.subjectId
                     },
                     onCancelClick = {
                         ServiceHelper.triggerService(
@@ -139,10 +194,12 @@ fun LessonScreen(
                         )
                     },
                     onFinishClick = {
+                        val timeSeconds = timerService.duration.toLong(DurationUnit.SECONDS)
                         ServiceHelper.triggerService(
                             context = context,
-                            action = SERVICE_ACTION_STOP
+                            action = SERVICE_ACTION_CANCEL
                         )
+                        viewModel.onEvent(LessonEvent.SaveLesson(timeSeconds))
                     },
                     timerState = timerService.timerState.value
                 )
@@ -152,9 +209,13 @@ fun LessonScreen(
             }
             lessonList(
                 title = "Lessons history",
-                lessonList = lessons,
+                lessonList = state.value.lessonList,
                 text = "You dont have any lesson",
-                onClickDelete = { deleteLessonDialogState = true }
+                onClickDelete = {
+                    viewModel.onEvent(LessonEvent.OnDeleteLesson(it))
+                    deleteLessonDialogState = true
+                    viewModel.onEvent(LessonEvent.DeleteLesson)
+                }
             )
         }
     }
@@ -226,7 +287,8 @@ private fun TimerLesson(
 private fun RelateSubject(
     modifier: Modifier = Modifier,
     subject: String,
-    onClickSubject: () -> Unit
+    onClickSubject: () -> Unit,
+    timerState: TimerState
 ) {
     Column(
         modifier = modifier
@@ -244,7 +306,10 @@ private fun RelateSubject(
                 text = subject,
                 style = MaterialTheme.typography.bodyLarge
             )
-            IconButton(onClick = onClickSubject) {
+            IconButton(
+                onClick = onClickSubject,
+                enabled = timerState != TimerState.Start
+            ) {
                 Icon(
                     imageVector = Icons.Default.ArrowDropDown,
                     contentDescription = "Select subject"

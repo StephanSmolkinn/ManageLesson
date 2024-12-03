@@ -33,6 +33,9 @@ class LessonTimerService : Service() {
     @Inject
     lateinit var notificationBuilder: NotificationCompat.Builder
 
+    private val _subjectId = mutableStateOf<Int?>(null)
+    var subjectId = _subjectId.value
+
     var seconds = mutableStateOf("00")
         private set
 

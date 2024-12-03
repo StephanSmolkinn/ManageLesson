@@ -18,7 +18,7 @@ class LessonRepositoryImpl @Inject constructor(
     }
 
     override fun getRecentTenLessonBySubject(subjectId: Int): Flow<List<Lesson>> {
-        return lessonDao.getAllLesson()
+        return lessonDao.getRecentLessonBySubjectId(subjectId)
     }
 
     override fun getRecentFiveLesson(): Flow<List<Lesson>> {
