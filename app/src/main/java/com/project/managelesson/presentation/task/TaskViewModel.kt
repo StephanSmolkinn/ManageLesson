@@ -1,23 +1,18 @@
 package com.project.managelesson.presentation.task
 
-import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.project.managelesson.domain.model.InvalidTaskException
 import com.project.managelesson.domain.model.Task
 import com.project.managelesson.domain.use_case.ManageLessonUseCase
-import com.project.managelesson.presentation.subject.SubjectViewModel
 import com.project.managelesson.utils.Priority
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
