@@ -22,6 +22,7 @@ import com.project.managelesson.domain.use_case.task_use_case.GetUpcomingTaskByS
 import com.project.managelesson.domain.use_case.lesson_use_case.InsertLessonUseCase
 import com.project.managelesson.domain.use_case.ManageLessonUseCase
 import com.project.managelesson.domain.use_case.subject_use_case.UpsertSubjectUseCase
+import com.project.managelesson.domain.use_case.task_notify_use_case.FindTaskDateTomorrowUseCase
 import com.project.managelesson.domain.use_case.task_use_case.UpsertTaskUseCase
 import dagger.Module
 import dagger.Provides
@@ -59,7 +60,8 @@ object UseCaseModule {
             getTaskUseCase = GetTaskUseCase(taskRepository),
             deleteTaskUseCase = DeleteTaskUseCase(taskRepository),
             getLessonsUseCase = GetLessonsUseCase(lessonRepository),
-            deleteLessonUseCase = DeleteLessonUseCase(lessonRepository)
+            deleteLessonUseCase = DeleteLessonUseCase(lessonRepository),
+            findTaskDateTomorrow = FindTaskDateTomorrowUseCase(getAllUpcomingTaskUseCase = GetAllUpcomingTaskUseCase(taskRepository))
         )
     }
 

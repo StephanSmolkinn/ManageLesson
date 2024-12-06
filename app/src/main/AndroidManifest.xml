@@ -41,6 +41,11 @@
             android:foregroundServiceType="specialUse"
             android:exported="false"
             android:enabled="true" />
+        
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            tools:node="remove" />
     </application>
 
 </manifest>

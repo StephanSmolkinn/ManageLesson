@@ -7,12 +7,12 @@ plugins {
 
 android {
     namespace = "com.project.managelesson"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.project.managelesson"
         minSdk = 29
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -74,6 +74,8 @@ dependencies {
 
     implementation(libs.androidx.compose.ui)
 
+    implementation(libs.androidx.work.ktx)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -83,5 +85,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
+
+    implementation(libs.androidx.hilt.work)
 
 }

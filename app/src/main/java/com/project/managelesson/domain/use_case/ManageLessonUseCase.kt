@@ -13,6 +13,7 @@ import com.project.managelesson.domain.use_case.subject_use_case.GetSubjectCount
 import com.project.managelesson.domain.use_case.subject_use_case.GetSubjectHoursUseCase
 import com.project.managelesson.domain.use_case.subject_use_case.GetSubjectsUseCase
 import com.project.managelesson.domain.use_case.subject_use_case.UpsertSubjectUseCase
+import com.project.managelesson.domain.use_case.task_notify_use_case.FindTaskDateTomorrowUseCase
 import com.project.managelesson.domain.use_case.task_use_case.DeleteTaskUseCase
 import com.project.managelesson.domain.use_case.task_use_case.GetAllUpcomingTaskUseCase
 import com.project.managelesson.domain.use_case.task_use_case.GetCompleteTaskBySubjectUseCase
@@ -39,5 +40,6 @@ data class ManageLessonUseCase(
     val getTaskUseCase: GetTaskUseCase,
     val deleteTaskUseCase: DeleteTaskUseCase,
     val getLessonsUseCase: GetLessonsUseCase,
-    val deleteLessonUseCase: DeleteLessonUseCase
+    val deleteLessonUseCase: DeleteLessonUseCase,
+    val findTaskDateTomorrow: FindTaskDateTomorrowUseCase,
 )
