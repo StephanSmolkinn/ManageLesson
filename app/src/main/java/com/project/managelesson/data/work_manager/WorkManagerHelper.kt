@@ -15,9 +15,9 @@ object WorkManagerHelper {
     fun scheduleDailyTaskNotification(context: Context) {
         val workRequest = PeriodicWorkRequestBuilder<TaskNotifyWorker>(
             repeatInterval = 1,
-            repeatIntervalTimeUnit = TimeUnit.HOURS,
-            flexTimeInterval = 15,
-            flexTimeIntervalUnit = TimeUnit.MINUTES
+            repeatIntervalTimeUnit = TimeUnit.DAYS,
+            flexTimeInterval = 16,
+            flexTimeIntervalUnit = TimeUnit.HOURS
         )
             .setBackoffCriteria(
                 backoffPolicy = BackoffPolicy.LINEAR,
@@ -35,7 +35,7 @@ object WorkManagerHelper {
         WorkManager.getInstance(context)
             .enqueueUniquePeriodicWork(
                 "TaskNotifyWorker",
-                ExistingPeriodicWorkPolicy.UPDATE, // update existing work
+                ExistingPeriodicWorkPolicy.KEEP,
                 workRequest
             )
     }

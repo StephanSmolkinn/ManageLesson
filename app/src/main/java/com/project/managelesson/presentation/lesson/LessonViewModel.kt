@@ -21,6 +21,7 @@ import javax.inject.Inject
 class LessonViewModel @Inject constructor(
     private val manageLessonUseCase: ManageLessonUseCase,
 ) : ViewModel() {
+
     private val _state = MutableStateFlow(LessonState())
     val state = combine(
         _state,
@@ -64,14 +65,9 @@ class LessonViewModel @Inject constructor(
                                 subjectId = state.value.subjectId ?: -1,
                             )
                         )
-                        _eventFlow.emit(UiEvent.SaveLesson)
-                        _eventFlow.emit(
-                            UiEvent.ShowSnackBar(message = "Lesson has been saved")
-                        )
+                        _eventFlow.emit(UiEvent.ShowSnackBar(message = "Lesson has been saved"))
                     } catch (e: Exception) {
-                        _eventFlow.emit(
-                            UiEvent.ShowSnackBar(message = "Can not save lesson")
-                        )
+                        _eventFlow.emit(UiEvent.ShowSnackBar(message = "Can not save lesson"))
                     }
                 }
             }
@@ -95,7 +91,7 @@ class LessonViewModel @Inject constructor(
                         state.value.lesson?.let {
                             manageLessonUseCase.deleteLessonUseCase(it)
                         }
-                        _eventFlow.emit(UiEvent.DeleteLesson)
+                        _eventFlow.emit(UiEvent.ShowSnackBar(message = "Lesson deleted"))
                     } catch (e: Exception) {
                         _eventFlow.emit(UiEvent.ShowSnackBar(message = "Can not delete lesson"))
                     }
@@ -118,7 +114,6 @@ class LessonViewModel @Inject constructor(
 
     sealed class UiEvent {
         data class ShowSnackBar(val message: String) : UiEvent()
-        data object SaveLesson : UiEvent()
-        data object DeleteLesson : UiEvent()
     }
+
 }

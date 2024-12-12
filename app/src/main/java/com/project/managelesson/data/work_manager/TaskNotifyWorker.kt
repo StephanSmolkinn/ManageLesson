@@ -21,7 +21,7 @@ class TaskNotifyWorker @AssistedInject constructor(
     @Assisted workerParameters: WorkerParameters,
 ) : CoroutineWorker(context, workerParameters) {
     override suspend fun doWork(): Result {
-        Log.d("TaskNotifyWorker", "doWork() викликано")
+        Log.d("TaskNotifyWorker", "doWork() is called")
         val hasTomorrowTask = manageLessonUseCase.findTaskDateTomorrow()
         if (hasTomorrowTask) {
             sendNotification(applicationContext)
@@ -35,8 +35,8 @@ class TaskNotifyWorker @AssistedInject constructor(
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val notification = NotificationCompat.Builder(context, "TASK_CHANNEL")
             .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setContentTitle("Завдання на завтра")
-            .setContentText("У вас є завдань, які потрібно виконати завтра.")
+            .setContentTitle("Task for tomorrow")
+            .setContentText("You have a task that needs to be completed tomorrow")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .build()
 
@@ -47,10 +47,10 @@ class TaskNotifyWorker @AssistedInject constructor(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 "TASK_CHANNEL",
-                "Завдання",
+                "Task",
                 NotificationManager.IMPORTANCE_HIGH
             ).apply {
-                description = "Сповіщення про завдання на завтра"
+                description = "Notification for task tomorrow"
             }
             val notificationManager = context.getSystemService(NotificationManager::class.java)
             notificationManager.createNotificationChannel(channel)

@@ -72,6 +72,7 @@ fun LessonScreen(
     }
 
     val sheetState = rememberModalBottomSheetState()
+
     var openBottomSheet by remember {
         mutableStateOf(false)
     }
@@ -90,14 +91,6 @@ fun LessonScreen(
                         duration = SnackbarDuration.Short
                     )
                 }
-
-                LessonViewModel.UiEvent.DeleteLesson -> {
-
-                }
-
-                LessonViewModel.UiEvent.SaveLesson -> {
-
-                }
             }
         }
     }
@@ -113,7 +106,10 @@ fun LessonScreen(
     }
 
     DeleteDialog(
-        onClickConfirmButton = { deleteLessonDialogState = false },
+        onClickConfirmButton = {
+            viewModel.onEvent(LessonEvent.DeleteLesson)
+            deleteLessonDialogState = false
+        },
         onDismissRequest = { deleteLessonDialogState = false },
         title = "Delete lesson",
         text = "Do you want to delete lesson?",
@@ -212,7 +208,6 @@ fun LessonScreen(
                 onClickDelete = {
                     viewModel.onEvent(LessonEvent.OnDeleteLesson(it))
                     deleteLessonDialogState = true
-                    viewModel.onEvent(LessonEvent.DeleteLesson)
                 }
             )
         }
