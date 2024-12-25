@@ -29,13 +29,6 @@
             </intent-filter>
         </activity>
 
-<!--        <service-->
-<!--            android:name=".presentation.lesson.LessonTimerService"-->
-<!--            android:foregroundServiceType="mediaPlayback"-->
-<!--            android:exported="false"-->
-<!--            tools:ignore="ForegroundServicePermission">-->
-<!--        </service>-->
-
         <service
             android:name=".presentation.lesson.LessonTimerService"
             android:foregroundServiceType="specialUse"
