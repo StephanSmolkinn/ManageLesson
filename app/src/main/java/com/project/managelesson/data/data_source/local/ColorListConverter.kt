@@ -1,4 +1,4 @@
-package com.project.managelesson.data.data_source
+package com.project.managelesson.data.data_source.local
 
 import androidx.room.TypeConverter
 

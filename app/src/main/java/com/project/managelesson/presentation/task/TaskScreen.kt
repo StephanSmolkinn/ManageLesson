@@ -1,5 +1,6 @@
 package com.project.managelesson.presentation.task
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -12,8 +13,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -22,6 +25,8 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -46,7 +51,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -97,8 +104,7 @@ fun TaskScreen(
             when (event) {
                 is TaskViewModel.UiEvent.ShowSnackBar -> {
                     scaffoldState.showSnackbar(
-                        message = event.message,
-                        duration = SnackbarDuration.Long
+                        message = event.message
                     )
                 }
 
@@ -213,11 +219,11 @@ fun TaskScreen(
             Spacer(modifier = Modifier.height(10.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Priority.entries.forEach {
                     Spacer(modifier = Modifier.width(12.dp))
                     PriorityIconButton(
-                        modifier = Modifier.weight(1f),
                         title = it.title,
                         onClick = { viewModel.onEvent(TaskEvent.OnPriorityChange(it)) },
                         backgroundColor = it.color,
@@ -316,12 +322,13 @@ private fun PriorityIconButton(
 ) {
     Box(
         modifier = modifier
-            .background(backgroundColor)
-            .padding(5.dp)
-            .border(1.dp, borderColor, RoundedCornerShape(8.dp))
-            .padding(5.dp)
+            .size(width = 100.dp, height = 50.dp)
+            .background(
+                brush = Brush.verticalGradient(listOf(backgroundColor, backgroundColor)),
+                shape = MaterialTheme.shapes.medium
+            )
             .clickable { onClick() },
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         Text(text = title, color = titleColor)
     }

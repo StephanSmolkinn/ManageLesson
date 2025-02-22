@@ -9,6 +9,7 @@ import com.project.managelesson.domain.use_case.ManageLessonUseCase
 import com.project.managelesson.utils.Priority
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -51,7 +52,6 @@ class TaskViewModel @Inject constructor(
         when(event) {
             TaskEvent.SaveTask -> {
                 viewModelScope.launch(Dispatchers.IO) {
-
                     try {
                         manageLessonUseCase.upsertTaskUseCase(
                             Task(
@@ -65,6 +65,8 @@ class TaskViewModel @Inject constructor(
                                 subjectId = _state.value.subjectId ?: return@launch
                             )
                         )
+                        _eventFlow.emit(UiEvent.ShowSnackBar(message = "Task was saved"))
+                        delay(3000L)
                         _eventFlow.emit(UiEvent.SaveTask)
                     } catch (e: InvalidTaskException) {
                         _eventFlow.emit(UiEvent.ShowSnackBar(message = e.message ?: "Can not save task"))

@@ -3,9 +3,10 @@ package com.project.managelesson.presentation.sign_up
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.project.managelesson.data.data_source.remote.ApiState
-import com.project.managelesson.domain.model.UserRemote
-import com.project.managelesson.domain.repository.RemoteApiRepository
+import com.project.managelesson.data.data_source.remote.responses.UserResponse
+import com.project.managelesson.domain.use_case.ManageLessonUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -18,7 +19,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor (
-    private val remoteApiRepository: RemoteApiRepository
+    private val manageLessonUseCase: ManageLessonUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SignUpState())
@@ -52,13 +53,13 @@ class SignUpViewModel @Inject constructor (
             }
 
             SignUpEvent.Register -> {
-                viewModelScope.launch {
-                    val user = UserRemote(
+                viewModelScope.launch(Dispatchers.IO) {
+                    val user = UserResponse(
                         fullName = state.value.name,
                         email = state.value.email,
                         password = state.value.password
                     )
-                    remoteApiRepository.registerUser(user).onEach {
+                    manageLessonUseCase.registerUserUseCase(user).onEach {
                         when(it) {
                             is ApiState.Success -> {
                                 _eventFlow.emit(UiEvent.ShowSnackBar(message = "Register success"))

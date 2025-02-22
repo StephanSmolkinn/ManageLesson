@@ -14,15 +14,11 @@ import java.util.concurrent.TimeUnit
 object WorkManagerHelper {
     fun scheduleDailyTaskNotification(context: Context) {
         val workRequest = PeriodicWorkRequestBuilder<TaskNotifyWorker>(
-            repeatInterval = 1,
-            repeatIntervalTimeUnit = TimeUnit.DAYS,
-            flexTimeInterval = 16,
+            repeatInterval = 12,
+            repeatIntervalTimeUnit = TimeUnit.HOURS,
+            flexTimeInterval = 1,
             flexTimeIntervalUnit = TimeUnit.HOURS
         )
-            .setBackoffCriteria(
-                backoffPolicy = BackoffPolicy.LINEAR,
-                duration = Duration.ofSeconds(15)
-            )
             .setConstraints(
                 Constraints.Builder()
                     .setRequiredNetworkType(NetworkType.NOT_REQUIRED)

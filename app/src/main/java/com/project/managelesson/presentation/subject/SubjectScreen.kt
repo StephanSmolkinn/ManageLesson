@@ -119,9 +119,10 @@ fun SubjectScreen(
     AddDialog(
         onClickConfirmButton = {
             viewModel.onEvent(SubjectEvent.UpdateSubject)
+            addDialogState = false
         },
-        onDismissRequest = { },
-        title = "Add Subject / Update Subject",
+        onDismissRequest = { addDialogState = false },
+        title = "Update Subject",
         isOpen = addDialogState,
         subjectName = state.subjectName,
         goalHours = state.goalLessonHours,

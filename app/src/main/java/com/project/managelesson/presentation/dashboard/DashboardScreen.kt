@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.rounded.AccountCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -112,7 +113,9 @@ fun DashboardScreen(
 
     Scaffold(
         topBar = {
-            DashboardTopBar()
+            DashboardTopBar(
+                onButtonAccountClick = { navController.navigate(Screen.SignInScreen.route) }
+            )
         },
         snackbarHost = {
             SnackbarHost(hostState = scaffoldState)
@@ -188,13 +191,23 @@ fun DashboardScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun DashboardTopBar() {
+private fun DashboardTopBar(
+    onButtonAccountClick: () -> Unit
+) {
     CenterAlignedTopAppBar(
         title = {
             Text(
                 text = "Manage Lesson",
                 style = MaterialTheme.typography.titleLarge
             )
+        },
+        navigationIcon = {
+            IconButton(onClick = onButtonAccountClick) {
+                Icon(
+                    imageVector = Icons.Rounded.AccountCircle,
+                    contentDescription = null
+                )
+            }
         }
     )
 }

@@ -20,12 +20,11 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.lang.NumberFormatException
 import javax.inject.Inject
 
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
-    private val manageLessonUseCase: ManageLessonUseCase
+    private val manageLessonUseCase: ManageLessonUseCase,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(DashboardState())

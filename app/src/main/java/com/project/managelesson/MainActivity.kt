@@ -10,11 +10,7 @@ import android.os.IBinder
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.graphics.toArgb
 import androidx.core.app.ActivityCompat
-import com.project.managelesson.domain.model.Lesson
-import com.project.managelesson.domain.model.Subject
-import com.project.managelesson.domain.model.Task
 import com.project.managelesson.navigation.Navigation
 import com.project.managelesson.presentation.lesson.LessonTimerService
 import com.project.managelesson.presentation.theme.ManageLessonTheme
