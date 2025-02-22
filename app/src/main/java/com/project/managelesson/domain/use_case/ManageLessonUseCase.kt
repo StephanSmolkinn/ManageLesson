@@ -7,6 +7,8 @@ import com.project.managelesson.domain.use_case.lesson_use_case.GetRecentTenLess
 import com.project.managelesson.domain.use_case.lesson_use_case.GetSumDurationBySubjectUseCase
 import com.project.managelesson.domain.use_case.lesson_use_case.GetSumDurationUseCase
 import com.project.managelesson.domain.use_case.lesson_use_case.InsertLessonUseCase
+import com.project.managelesson.domain.use_case.remote_api_use_case.LoginUserUseCase
+import com.project.managelesson.domain.use_case.remote_api_use_case.RegisterUserUseCase
 import com.project.managelesson.domain.use_case.subject_use_case.DeleteSubjectUseCase
 import com.project.managelesson.domain.use_case.subject_use_case.GetSubjectByIdUseCase
 import com.project.managelesson.domain.use_case.subject_use_case.GetSubjectCountUseCase
@@ -20,6 +22,8 @@ import com.project.managelesson.domain.use_case.task_use_case.GetCompleteTaskByS
 import com.project.managelesson.domain.use_case.task_use_case.GetTaskUseCase
 import com.project.managelesson.domain.use_case.task_use_case.GetUpcomingTaskBySubjectUseCase
 import com.project.managelesson.domain.use_case.task_use_case.UpsertTaskUseCase
+import com.project.managelesson.domain.use_case.user_use_case.GetUserUseCase
+import com.project.managelesson.domain.use_case.user_use_case.UpsertUserUseCase
 
 data class ManageLessonUseCase(
     val upsertSubjectUseCase: UpsertSubjectUseCase,
@@ -42,4 +46,8 @@ data class ManageLessonUseCase(
     val getLessonsUseCase: GetLessonsUseCase,
     val deleteLessonUseCase: DeleteLessonUseCase,
     val findTaskDateTomorrow: FindTaskDateTomorrowUseCase,
+    val registerUserUseCase: RegisterUserUseCase,
+    val loginUserUseCase: LoginUserUseCase,
+    val upsertUserUseCase: UpsertUserUseCase,
+    val getUserUseCase: GetUserUseCase
 )
