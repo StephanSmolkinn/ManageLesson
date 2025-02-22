@@ -1,8 +1,8 @@
 package com.project.managelesson.data.repository
 
-import com.project.managelesson.data.data_source.LessonDao
-import com.project.managelesson.data.data_source.SubjectDao
-import com.project.managelesson.data.data_source.TaskDao
+import com.project.managelesson.data.data_source.local.LessonDao
+import com.project.managelesson.data.data_source.local.SubjectDao
+import com.project.managelesson.data.data_source.local.TaskDao
 import com.project.managelesson.domain.model.Subject
 import com.project.managelesson.domain.repository.SubjectRepository
 import kotlinx.coroutines.flow.Flow

@@ -2,10 +2,11 @@ package com.project.managelesson.di
 
 import android.app.Application
 import androidx.room.Room
-import com.project.managelesson.data.data_source.LessonDao
-import com.project.managelesson.data.data_source.ManageLessonDatabase
-import com.project.managelesson.data.data_source.SubjectDao
-import com.project.managelesson.data.data_source.TaskDao
+import com.project.managelesson.data.data_source.local.LessonDao
+import com.project.managelesson.data.data_source.local.ManageLessonDatabase
+import com.project.managelesson.data.data_source.local.SubjectDao
+import com.project.managelesson.data.data_source.local.TaskDao
+import com.project.managelesson.data.data_source.local.UserDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -50,4 +51,11 @@ object DatabaseModule {
     fun provideLessonDao(db: ManageLessonDatabase): LessonDao {
         return db.lessonDao()
     }
+
+    @Provides
+    @Singleton
+    fun provideUserDao(db: ManageLessonDatabase): UserDao {
+        return db.userDao()
+    }
+
 }

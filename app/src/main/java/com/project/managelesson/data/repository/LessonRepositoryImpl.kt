@@ -1,6 +1,6 @@
 package com.project.managelesson.data.repository
 
-import com.project.managelesson.data.data_source.LessonDao
+import com.project.managelesson.data.data_source.local.LessonDao
 import com.project.managelesson.domain.model.Lesson
 import com.project.managelesson.domain.repository.LessonRepository
 import kotlinx.coroutines.flow.Flow

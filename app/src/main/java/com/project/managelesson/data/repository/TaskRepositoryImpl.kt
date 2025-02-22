@@ -1,6 +1,6 @@
 package com.project.managelesson.data.repository
 
-import com.project.managelesson.data.data_source.TaskDao
+import com.project.managelesson.data.data_source.local.TaskDao
 import com.project.managelesson.domain.model.Task
 import com.project.managelesson.domain.repository.TaskRepository
 import kotlinx.coroutines.flow.Flow
