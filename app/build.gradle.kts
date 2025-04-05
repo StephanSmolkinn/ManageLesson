@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.googleDaggerHiltAndroid)
     alias(libs.plugins.googleDevtoolsKsp)
+    id("kotlin-parcelize")
 }
 
 android {
@@ -75,6 +76,13 @@ dependencies {
     implementation(libs.androidx.compose.ui)
 
     implementation(libs.androidx.work.ktx)
+    implementation(libs.androidx.hilt.work)
+
+    // retrofit
+    implementation(libs.squareup.retrofit2)
+    implementation(libs.squareup.retrofit2.converter)
+    implementation(libs.squareup.retrofit2.scalars)
+    implementation(libs.squareup.okhttp3)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -85,7 +93,5 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
-
-    implementation(libs.androidx.hilt.work)
 
 }

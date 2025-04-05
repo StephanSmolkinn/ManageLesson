@@ -2,8 +2,8 @@ package com.project.managelesson
 
 import android.app.Application
 import androidx.work.Configuration
-import com.project.managelesson.data.work_manager.TaskNotifyWorkerFactory
-import com.project.managelesson.data.work_manager.WorkManagerHelper
+import com.project.managelesson.study.data.work_manager.TaskNotifyWorkerFactory
+import com.project.managelesson.study.data.work_manager.WorkManagerHelper
 import dagger.hilt.android.HiltAndroidApp
 
 import javax.inject.Inject

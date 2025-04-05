@@ -11,9 +11,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.app.ActivityCompat
-import com.project.managelesson.navigation.Navigation
-import com.project.managelesson.presentation.lesson.LessonTimerService
-import com.project.managelesson.presentation.theme.ManageLessonTheme
+import com.project.managelesson.core.navigation.Navigation
+import com.project.managelesson.study.presentation.lesson.LessonTimerService
+import com.project.managelesson.core.presentation.theme.ManageLessonTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
